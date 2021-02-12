@@ -1,0 +1,91 @@
+{% extends "./base.html"%}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<style>
+    .demo{ background: #2c304a; }
+            .progress-title{
+                font-size: 18px;
+                font-weight: 700;
+                color: #fff;
+                margin: 0 0 20px;
+            }
+            .progress{
+                height: 20px;
+                background: #171b3c;
+                border-radius: 20px;
+                border: 1px solid #000;
+                box-shadow: 0 2px 2px #4f4c4c;
+                margin-bottom: 40px;
+                overflow: visible;
+                position: relative;
+            }
+            .progress .progress-bar{
+                border-radius: 20px;
+                border:  1px solid #000;
+                -webkit-animation: animate-positive 2s;
+                animation: animate-positive 2s;
+            }
+            .progress .progress-value{
+                width: 65px;
+                height: 25px;
+                line-height: 25px;
+                background: #171b3c;
+                font-size: 15px;
+                color: #fff;
+                border-radius: 0 0 15px 15px;
+                border: 1px solid #000;
+                border-top: none;
+                box-shadow: 0 2px 2px #4f4c4c;
+                position: absolute;
+                bottom: -25px;
+                right: 60px;
+            }
+            @-webkit-keyframes animate-positive{
+                0% { width: 0; }
+            }
+            @keyframes animate-positive{
+                0% { width: 0; }
+            }
+            
+</style>
+{% if current_user.is_authenticated %}
+
+<div id="modal" class="bg-gray-100 py-4 h-full sm:px-4 md:px-24 mheight w-full shallow-color items-center justify-center">
+    <div class="bg-white shadow-lg rounded-lg py-4 px-4">
+        <p class="text-2xl font-bold text-{{context.theme}}-800">Your Investment</p>
+        <p class="text-lg font-semibold text-{{context.theme}}-700">Capital - {{context.capital}} <br> Expected Returns - {{context.expected_return}}</p>
+        <br>
+        <div style=" width: 100%;" class="bg-black shadow-inset-lg text-xl rounded-br-lg rounded-tr-lg">
+            <div style=" z-index: 2; text-align: center; vertical-align: middle; width: {{ context.day_what_perc }}%;" class="text-xl bg-green-500 rounded-br-lg rounded-tr-lg shadow-inset-lg">{{ context.day_what_perc }}%</div>
+        </div>
+        <p class="text-center text-lg text-{{context.theme}}-800 font-semibold mt-1">Day {{ context.day_what }} out of {{ context.no_of_invest_day }} days</p>
+        <br>
+        {% if context.day_what >= context.invest_day/2 and not context.my_invest.profit_withdraw %}
+            <form id="withdraw_capital" action="{{url_for('withdraw_investment')}}" method="post">
+                <input type="hidden" name="invest_id" value="{{context.my_invest.id}}">
+                <input type="hidden" name="type" value="profit">
+                <input type="submit" class="w-full bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl" value="Withdraw Profit">
+            </form>
+        <!-- <button id="withdraw_profit" invest_id="{{context.my_invest.id}}" amount="{{context.my_invest.expected_return-context.my_invest.capital}}" type="profit" class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl">Withdraw Profit</button> -->
+        {% endif %}
+        
+        {% if context.day_what >= context.invest_day and not context.my_invest.capital_withdraw %}
+            <form id="withdraw_capital" action="{{url_for('withdraw_investment')}}" method="post">
+                <input type="hidden" name="invest_id" value="{{context.my_invest.id}}">
+                <input type="hidden" name="type" value="capital">
+                <input type="submit" class="w-full bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl" value="Withdraw Capital">
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+<script>
+    $("#withdraw_profit").submit(function(){
+        alert("Congratulations!!!")
+    })
+
+    $("#withdraw_capital").submit(function(){
+        alert("Congratulations!!!")
+    })
+</script>
+{% endblock %}

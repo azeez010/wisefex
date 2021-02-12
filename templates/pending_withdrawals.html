@@ -1,0 +1,27 @@
+{% extends "./base.html"%}
+{% block title %}Pending withdrawals{% endblock %}
+{% block content %}
+<div class="bg-gray-100 py-4 h-full sm:px-4 md:px-24 mheight">
+    <p class="text-3xl font-bold texl-{{context}}-800">Pending Withdrawals</p><br>
+{% for user_data in context.pending %}
+    {% if user_data.paid %}
+    <!-- user_data.investment.invest_type -->
+    <div class="bg-white shadow-lg rounded-lg py-4 px-4">
+        <p class="text-center text-2xl text-{{context.theme}}-800 font-bold"><i class="fa fa-check-circle text-green-700"></i> You have successfully withdrew {{ user_data.investment.expected_return }}</p>
+        <br>
+        <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">We have credited your account with {{ user_data.investment.expected_return }} {{user_data.investment.invest_type}} </p>
+    
+    </div>
+    {% else %}
+        <div class="bg-white shadow-lg rounded-lg py-4 px-4">
+            <p class="text-center text-2xl text-{{context.theme}}-800 font-bold">Withdrawing {{ user_data.investment.expected_return }}</p>
+            <br>
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">The {{ user_data.investment.expected_return }} {{user_data.investment.invest_type}} you withdrew is been processed and your account will be credited soon</p>
+        </div>
+    {% endif %}
+    {% else %}
+    <p class="text-lg">No pending withdrawal </p>
+    {% endfor %}
+</div>
+
+{% endblock %}

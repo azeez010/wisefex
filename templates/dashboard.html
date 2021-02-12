@@ -1,0 +1,186 @@
+{% extends "./base.html"%}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="bg-gray-100 py-4 h-full sm:px-4 md:px-24 mheight">
+{% if current_user.is_authenticated %}
+    <div> 
+        <div class="py-2 px-2 text-white shadow-lg bg-{{ context.theme }}-500 rounded-lg my-1">Invite people and earn 2% of every of their Investments, with your own unique link <span class="font-semibold">{{context.url_of_invest}}/signup?ref={{current_user.username}}</span></div>
+    </div>
+    <br>
+    <p class="sm:text-xl md:text-2xl font-bold my-1">Welcome, {{ current_user.username }}</p>
+    <p class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 text-white  p-1 mt-2 py-2 px-2 rounded-lg">Bonus wallet {{ current_user.bonus_wallet }}</p>
+    <!-- <p class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 text-white  p-1 mt-2 py-2 px-2 rounded-lg">Main wallet {{ current_user.invest_wallet }}</p> -->
+    <!-- <p class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 text-white  p-1 mt-2 py-2 px-2 rounded-lg">Main wallet {{ current_user.invest_wallet }}</p> -->
+    <!-- <br> -->
+
+    {% if context.bonus_wallet >= context.min_ref_withdraw %}
+    <form id="withdraw_bonus" action="{{url_for('withdraw_investment')}}" method="post">
+        <input type="hidden" name="type" value="bonus">
+        <input type="submit" class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl" value="Withdraw Bonus">
+    </form>
+    <!-- <button class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-sm md:text-lg">Withdraw bonus</button> -->
+    {% else %}
+    <p>You need #{{context.min_ref_withdraw}} to withdraw bonus funds </p>
+    {% endif %}
+    {% if context.lock_investment %}
+        <p class="text-lg text-{{ context.theme }}-900">We are sorry, You can't invest for now, check back on {{ context.date }}</p>
+    {% else %}
+    <br>
+    <button id="naira" class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-2 sm:text-lg md:text-xl" id="deposit">Deposit with Naira</button>
+    <button id="bitcoin" class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-2 sm:text-lg md:text-xl" id="depositWithBtc">Deposit with bitcoin</button>
+    
+    <!-- <div style="display: none" id="depositDiv" class="none"> -->
+        <!-- <br> -->
+        <br>
+        <br>
+        <!-- <br> -->
+        <div class="shadow-lg rounded-lg py-2 px-2 bg-white" style="display: none" id="nairaDiv">
+            <p class="font-semibold text-xl text-{{context.theme}}-800">Pay with Naira</p> 
+            <p>Invest {{context.invest_percent}}% for {{ context.no_of_invest_day }} days</p>
+            <form action="/invest" method="get">
+                <input placeholder="Enter the amount you want to invest" class="border-2 placeholder-text-sm border-{{ context.theme }}-500 rounded-lg md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="number" name="amount" id="nairaInput" min="{{ context.min_naira }}" max="{{ context.max_naira }}" required><br>
+                <p class="text-red-500 text-lg">Minimum and Maximum investment is ₦{{ context.min_naira }} - ₦{{ context.max_naira }}</p>
+                <input type="hidden" name="currency" value="naira">
+                <p class="text-lg"> Expected returns - <span class="font-semibold text-lg text-green-800" id="profit"></span></p>
+                <input class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-sm md:text-lg" type="submit" value="Invest!">
+            </form>
+        </div>
+        <div class="shadow-lg rounded-lg py-2 px-2 bg-white" style="display: none" id="bitcoinDiv">
+            <p class="font-semibold text-xl text-{{context.theme}}-800">Pay with bitcoin</p> 
+            <p>Invest {{context.invest_percent}}% for {{ context.no_of_invest_day }} days</p>
+            <form action="/invest" method="get">
+                <input placeholder="Enter the amount you want to invest" class="border-2 placeholder-text-sm border-{{ context.theme }}-500 rounded-lg md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="number" name="amount" id="btcInput" min="{{ context.min_bitcoin }}" max="{{ context.max_bitcoin }}" required><br>
+                <p class="text-red-500 text-lg">Minimum and Maximum investment is ${{ context.min_bitcoin }} - ${{ context.max_bitcoin }}</p>
+                <input type="hidden" name="currency" value="bitcoin">
+                <p class="text-lg"> Expected returns - <span class="font-semibold text-lg text-green-800" id="profitbtc"></span></p>
+               
+                <p class="font-semibold text-lg text-green-800" id="profitbtc"></p>
+                <input class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-sm md:text-lg" type="submit" value="Invest!">
+            </form>
+        </div>
+    <!-- </div> -->
+    {% endif %}
+    <!-- <button id="withdraw">withdraw</button> -->
+    
+<!-- 
+    <div style="display: none" id="withdrawDiv" class="none">
+        <button id="nairaWithdraw">Naira</button>
+        <button id="bonusWithdraw">bonus</button>
+        <button id="bitcoinWithdraw">Bitcoin</button>
+        <div style="display: none" id="nairaWithdrawDiv">
+            Pay with Naira
+            <p>Invest {{context.invest_percent}}% for {{ context.no_of_invest_day }} days</p>
+            <form action="/invest" method="get">
+                <input placeholder="Enter the amount you want to invest" class="border-2 placeholder-text-sm border-{{ context.theme }}-500 rounded-lg md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="number" name="amount" id="" min="{{ context.min_naira }}" max="{{ context.max_naira }}" required><br>
+                <p class="text-red-500 text-lg">Minimum and Maximum investment is #{{ context.min_naira }} - #{{ context.max_naira }}</p>
+                <input type="hidden" name="currency" value="naira">
+                <input class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-sm md:text-lg" type="submit" value="Invest!">
+            </form>
+        </div>
+        <div style="display: none" id="bitcoinDiv">
+            Pay with bitcoin
+        </div>
+    </div> -->
+<br>
+<br class="p-2">
+    <p></p>
+    <table class="w-full bg-white shadow-lg rounded-lg py-4 px-2 border-2">
+        <tr class="border-2 p-4">
+            <th>Capital</th>
+            <th>Expected Result</th>
+            <th>Status</th>
+        </tr>
+        {% for your_investment in context.your_investments %}
+            <tr style="text-align: center">
+                <td>{{ your_investment.capital }}</td>
+                <td>{{ your_investment.expected_return }}</td>
+                {% if your_investment.reject %}
+                <td class="text-red-600"><i>Rejected</i></td>
+                {% elif your_investment.approved %}
+                    <td class="text-green-600"><i>Approved</i></td>
+                {% else%}
+                    <td><i>Pending...</i></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+<div>
+    
+</div>
+<br>
+<br>
+{% endif %}
+</div>
+   
+<script>
+
+let naira = document.getElementById('nairaInput')
+let profit = document.getElementById('profit')
+let perc = Number('{{context.invest_percent}}')
+
+console.log(naira.innerText)
+naira.addEventListener("change", ()=>{
+    let num = Number(naira.value)
+    profit.innerText = `₦${num + ((num * perc) / 100)}`
+})
+
+
+let btc = document.getElementById('btcInput')
+let profitbtc = document.getElementById('profitbtc')
+
+console.log(btc.innerText)
+btc.addEventListener("change", ()=>{
+    let num = Number(btc.value)
+    profitbtc.innerText = `$${num + ((num * perc) / 100)}`
+})
+
+
+$("#deposit").click(function(){
+    $("#depositDiv").toggle()
+})
+
+$("#withdraw").click(function(){
+    $("#withdrawDiv").toggle()
+})
+
+
+// $("#naira").change(function(){
+//     $(this).toggle()
+// })
+
+
+$("#naira").click(function(){
+    $("#nairaDiv").show()
+    $("#bitcoinDiv").hide()
+    $(this).css({"border-bottom": "2px {{context.theme}} solid"})
+    $("#bitcoin").css({"border-bottom": "none"})
+})
+
+$("#bitcoin").click(function(){
+    $("#bitcoinDiv").show()
+    $("#nairaDiv").hide()
+    $(this).css({"border-bottom": "2px {{context.theme}} solid"})
+    $("#naira").css({"border-bottom": "none"})
+})
+
+
+$("#nairaWithdraw").click(function(){
+    $("#nairaWithdrawDiv").show()
+    $("#bitcoinWithdrawDiv").hide()
+    $(this).css({"border-bottom": "2px {{context.theme}} solid"})
+    $("#bitcoinWithdraw").css({"border-bottom": "none"})
+})
+
+$("#bitcoinWithdraw").click(function(){
+    $("#bitcoinWithdrawDiv").show()
+    $("#nairaWithdrawDiv").hide()
+    $(this).css({"border-bottom": "2px {{context.theme}} solid"})
+    $("#naira").css({"border-bottom": "none"})
+})
+
+$("#withdraw_bonus").submit(function(){
+        alert("Congratulations!!!")
+    })
+
+</script>
+{% endblock %}

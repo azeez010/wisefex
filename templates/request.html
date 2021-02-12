@@ -1,0 +1,11 @@
+{% extends "./base.html"%}
+{% block title %}Make a request{% endblock %}
+{% block content %}
+<div class="bg-gray-200 py-4 h-full sm:px-2 md:px-24 mheight">
+    <form action="/request" method="post">
+        {{ form.csrf_token }}
+        {{ form.request(placeholder="Make a request", class="rounded-lg bg-white w-full border-2 border-gray-500 h-32 py-2 px-8")}}
+        {{ form.submit(class="bg-gray-500 text-white py-4 px-8 mt-2e rounded-lg") }}
+    </form>
+</div>
+{% endblock %}

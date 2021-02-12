@@ -1,0 +1,30 @@
+{% extends "./base.html"%}
+{% block title %}login{% endblock %}
+{% block content%}
+    <style>
+        #email, #password{
+            border-color: rgb(175, 175, 175);
+        }
+        #button{
+            background-color: {{context.theme}};
+        }
+    </style>
+<div class="bg-white py-4 h-full sm:px-4 md:px-48 mheight">
+    {% from "_formhelpers.html" import render_field %}
+    <div class="sm:px-2 md:px-24">
+        <h1 class="text-4xl font-bold text-{{context.theme}}-700">Login</h1>
+        <br>
+        <!-- <br> -->
+         <form method="post">
+             {{ form.csrf_token }}
+         <dl>
+             {{ render_field(form.email, id="email", class="border-2 placeholder-text-lg md:w-5/5 sm:3/5 px-4 mt-1 mb-2 md:py-4 sm:py-2 sm:px-2 sm:w-full md:w-lg", placeholder="your e-mail") }}
+             {{ render_field(form.password, id="password", class="border-2 placeholder-text-lg md:w-5/5 sm:3/5 px-4 mt-1 mb-2 md:py-4 sm:py-2 sm:px-2 sm:w-full md:w-lg", placeholder="your password") }}
+         </dl>
+         {{ form.submit(id="button", class="bg-{{context.theme}}-500 hover hover:bg-{{context.theme}}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-2 md:mt-2 md:py-4 md:px-8 sm:py-2 sm:px-4 sm:text-md md:text-lg sm:w-full mt-2 md:w-lg") }}
+       </form>
+       <a href="/reset-password" class="text-right float-right sm:text-md md:text-xl text-{{context.theme }}-900">Forgot password</a>
+       <a href="/signup" class="text-center text-{{context.theme }}-900 sm:text-md md:text-xl">Sign up</a>
+     </div>
+    </div>
+{% endblock %}

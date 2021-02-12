@@ -1,0 +1,95 @@
+{% extends "./base.html"%}
+{% block title %}pending deposits{% endblock %}
+{% block content %}
+<div class="bg-gray-100 py-4 h-full sm:px-4 md:px-24 mheight">
+    <p class="text-3xl font-bold texl-{{context}}-800">Pending Deposit</p><br>
+<br>
+{% for user_data in context.pending %}
+    {% if user_data.invest_type == "naira" %}
+        {% if user_data.pending == False and user_data.approved == True %}
+        <div class="bg-white shadow-lg rounded-lg py-4 px-4">
+            <p class="text-center text-3xl text-{{context.theme}}-800 font-bold">₦{{user_data.capital}}</p>
+             <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">Your proof has been approved, You can now check your investment Status</p>
+            <br>
+            <a class="block text-center bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl w-full" href="/my-investment?id={{user_data.id}}">View Investment Status</a>
+            <!-- <input  type="submit" value="Submit Payment"> -->
+            <!-- <form action="{{url_for('confirm_payment')}}" enctype="multipart/form-data" method="post">
+                <input class=" placeholder-text-md rounded-lg md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="file" name="proof" id="">
+                <br>
+                <textarea name="description" id="" class="border-2 border-gray-400" placeholder="describe the payment"  style="width: 100%" cols="15"></textarea>
+                <br>
+                <input type="hidden" name="cur_type" value="{{user_data.invest_type}}">
+                <input type="hidden" name="investment_id" value="{{user_data.id}}">
+            </form> -->
+        </div>
+        {% elif user_data.pending == True %}
+        <div class="bg-white shadow-lg rounded-lg py-4 px-4">
+            <p class="text-center text-3xl text-{{context.theme}}-800 font-bold">₦{{user_data.capital}}</p>
+            <p class="text-center text-2xl text-{{context.theme}}-900 font-semibold">Bank</p>
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">{{ context.bank_name}}</p>
+            <p class="text-center text-2xl text-{{context.theme}}-900 font-semibold">Account name</p>
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">{{ context.account_name}} </p>
+            <p class="text-center text-2xl text-{{context.theme}}-900 font-semibold">Account number</p>         
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">{{ context.account_number }}</p>         
+            <br>
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold"> Upload proof here when you are done paying to the account details Above</p>
+            <form action="{{url_for('confirm_payment')}}" enctype="multipart/form-data" method="post">
+                <input class=" placeholder-text-md rounded-lg md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="file" name="proof" id="">
+                <br>
+                <textarea name="description" id="" class="border-2 border-gray-400" placeholder="describe the payment"  style="width: 100%" cols="15"></textarea>
+                <br>
+                <input class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl w-full" type="submit" value="Submit Payment">
+                <!-- <input type="hidden" name="amount" value="{{user_data.capital}}"> -->
+                <input type="hidden" name="cur_type" value="{{user_data.invest_type}}">
+                <input type="hidden" name="investment_id" value="{{user_data.id}}">
+            </form>
+        </div>
+        {% elif user_data.pending == False %}
+        <div class="bg-white shadow-lg rounded-lg py-4 px-4">
+            <p class="text-center text-3xl text-{{context.theme}}-800 font-bold">₦{{user_data.capital}}</p>
+            <!-- <p class="text-center text-2xl text-{{context.theme}}-900 font-semibold">Bank</p>
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">{{ context.bank_name}}</p>
+            <p class="text-center text-2xl text-{{context.theme}}-900 font-semibold">Account name</p>
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">{{ context.account_name}} </p>
+            <p class="text-center text-2xl text-{{context.theme}}-900 font-semibold">Account number</p>         
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">{{ context.account_number }}</p>          -->
+            <br>
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold"> <i>Your proof has been submitted successfully </i></p>
+            <p class="text-center text-xl text-{{context.theme}}-800 font-semibold">Reupload payment proof</p>
+            <form action="{{url_for('confirm_payment')}}" enctype="multipart/form-data" method="post">
+                <input class=" placeholder-text-md rounded-lg md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="file" name="proof" id="">
+                <br>
+                <textarea name="description" id="" class="border-2 border-gray-400" placeholder="describe the payment"  style="width: 100%" cols="15"></textarea>
+                <br>
+                <input class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl w-full" type="submit" value="Submit Payment">
+                <!-- <input type="hidden" name="amount" value="{{user_data.capital}}"> -->
+                <input type="hidden" name="cur_type" value="{{user_data.invest_type}}">
+                <input type="hidden" name="investment_id" value="{{user_data.id}}">
+            </form>
+        </div>
+        {% endif %}
+    {% else %}
+        <!-- <p class="text-lg">You currently have ${{ current_user.invest_wallet }}</p><br> -->
+        <div class="bg-white shadow-lg rounded-lg py-4 px-4">
+        You are to pay a sum of ${{user_data.amount}} to {{ user_data.bitcoin_addr}} Bitcoin Wallet
+        <p></p>
+        <form action="{{url_for('confirm_payment')}}" method="post">
+            <input class="border-2 placeholder-text-md border-{{ context.theme }}-500 rounded-lg md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" name="proof" id="">
+            <input class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl" type="submit" value="Submit Payment">
+            <!-- <input type="hidden" name="amount" value="{{amount}}"> -->
+            <input type="hidden" name="cur_type" value="{{user_data.id}}">
+        </form> 
+        </div>
+    {% endif %}
+    <!-- <h1 class="text-2xl font-bold">49ja lifestyle</h1><br><br> -->
+    <div id="loader" class="loader"></div>
+    <div id="predictions"></div>
+    <br>
+    <br>
+    {% else %}
+    <p class="text-lg">No pending deposit </p>
+    {% endfor %}
+</div>
+</div>
+    
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "./base.html"%}
+{% block title %}Referrals{% endblock %}
+{% block content %}
+<div class="bg-gray-100 py-4 h-full sm:px-4 md:px-24 mheight">
+    <p class="text-xl texl-{{context}}-800">Commission breakdown</p><br>
+    <table class="w-full bg-white shadow-lg rounded-lg py-4 px-2 border-2">
+        <tr style="text-align: left" class="border-2 p-4">
+            <th>Username</th>
+            <th>Email</th>
+        </tr>
+        {% for referral in context.referrals%}
+            <tr style="text-align: left">
+                <td>{{ referral.username }}</td>
+                <td>{{ referral.email }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+<br>
+</div>
+
+{% endblock %}

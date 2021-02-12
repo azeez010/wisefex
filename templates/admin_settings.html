@@ -1,0 +1,88 @@
+{% extends "./base.html"%}
+{% block title %}Admin tab{% endblock %}
+{% block content%}
+<style>
+    input{
+            border-color: rgb(175, 175, 175);
+        }
+    #button{
+        background-color: {{context.theme}};
+    }
+</style>
+{% if current_user.is_admin %}
+    <div class="bg-white py-2 h-full sm:px-4 md:px-24 mheight">
+       <p class="text-3xl">Welcome, Admin {{ current_user.username }}</p> 
+        <br>
+        <a class="text-{{ context.theme }}-900 font-semibold hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('admin_settings') }}">Admin Settings</a><br>
+       <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('deposit_admin_approval') }}">Approve Deposits</a><br>
+       <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('withdraw_admin_approval') }}">Approve Withdrawals</a><br>
+       <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('admin_stats_and_lock') }}">Check stats and lock investments</a><br>
+       <br>
+       <form action="" method="post">
+            <p class="text-2xl font-semi-bold">Admin bank details</p>     
+            <p class="text-lg">Wisefex account name</p> 
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Account Name..." name="account_name" value="{{context.account_name}}"><br>
+            <p class="text-lg">Wisefex bank name</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Bank Name..." name="bank_name" value="{{context.bank_name}}"><br>
+            <p class="text-lg">Wisefex account number</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Account Number..." name="account_number" value="{{context.account_number}}"><br>
+            <p class="text-lg">Wisefex bitcoin address</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Bitcoin Address..." name="bitcoin_addr" value="{{context.bitcoin_addr}}"><br>
+            <br>
+            <p class="text-2xl font-semi-bold">Change Minimum and maximum investment and withdrawal</p>
+            <p class="text-lg">Minimum deposit in Naira</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Minimum Investment Naira..." name="min_naira" value="{{context.min_naira}}"><br>
+            <p class="text-lg">Maximum deposit in Naira</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Maximum Investment Naira..." name="max_naira" value="{{context.max_naira}}"><br>
+            <p class="text-lg">Minimum deposit in Bitcoin</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Minimum Investment Bitcoin..." name="min_bitcoin" value="{{context.min_bitcoin}}"><br>
+            <p class="text-lg">Maximum deposit in Bitcoin</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Maximum Investment Bitcoin..." name="max_bitcoin" value="{{context.max_bitcoin}}"><br>
+            <p class="text-lg">Minimum Referral bonus withdrawal in Naira</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Minimum Bonus withdrawal..." name="min_ref_withdraw" value="{{context.min_ref_withdraw}}"><br>
+            
+            <br>
+            <p class="text-2xl font-semi-bold">Change Referral bonus and Investment percent</p>
+            <p class="text-lg">Referral bonus</p> 
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Referral bonus..." name="ref_bonus" value="{{context.ref_bonus}}"><br>
+            <p class="text-lg">Investment percent</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Investment percentage..." name="invest_percent" value="{{context.invest_percent}}"><br>
+            <br>
+            <p class="text-2xl font-semi-bold">Others admin settings</p>
+            <p class="text-lg">Number of possible investment by a User</p> 
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="No of concurrent Investment..." name="no_concurrent_invest" value="{{context.no_concurrent_invest}}"><br>
+            <p class="text-lg">Lock Deposits in hours</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Lock deposit in Hours..." name="lock_invest_hours" value="{{context.lock_invest_hours}}"><br>
+            
+            <p class="text-lg">Number of Investment days</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Number of Investment days..." name="no_of_invest_day" value="{{context.no_of_invest_day}}"><br>
+            
+            <p class="text-lg">Name of Investment Company</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="Name of Investment Company..." name="name_of_invest" value="{{context.name_of_invest}}"><br>
+            
+            <p class="text-lg">Url of Investment Company</p>
+            <input class="border-2 placeholder-text-md   md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" placeholder="URL e.g. http://www.wisefex.ml..." name="url_of_invest" value="{{context.url_of_invest}}"><br>
+            
+
+            <p class="text-lg">Theme</p>     
+            <select class="md:w-1/3 sm:w-4/5 py-2 px-2  border-2 px-8 my-3" name="theme" id="">
+                <option value="blue" {% if context.theme == "blue" %} selected {% endif %}>Blue</option>
+                <option value="red"{% if context.theme == "red" %} selected {% endif %}>Red</option>
+                <option value="green" {% if context.theme == "green" %} selected {% endif %} >Green</option>
+                <option value="indigo" {% if context.theme == "indigo" %} selected {% endif %}>Indigo</option>
+                <option value="yellow" {% if context.theme == "yellow" %} selected {% endif %} >Yellow</option>
+                <option value="pink" {% if context.theme == "pink" %} selected {% endif %} >Pink</option>
+                <option value="purple" {% if context.theme == "purple" %} selected {% endif %} >purple</option>
+                <option value="gray" {% if context.theme == "gray" %} selected {% endif %} >Gray</option>
+            </select>
+            <br>
+            <input type="submit" id="button" class=" hover shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl" value="Update settings">
+        <!-- <button id="buttons">sass</button>     -->
+        </form>
+            <br>
+            <br>
+    </div>
+    {% else %}
+        <p class="text-xl text-{{ context.theme }}-600 py-3 block">Ooops! You Got here by mistake</p>
+    {% endif %}
+{% endblock %}

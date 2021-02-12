@@ -1,0 +1,43 @@
+{% extends "./base.html"%}
+{% block title %}Admin tab{% endblock %}
+{% block content%}
+{% if current_user.is_admin %}
+    <div class="bg-white py-2 h-full sm:px-4 md:px-24 mheight">
+       <p class="text-3xl">Welcome, Admin {{ current_user.username }}</p> 
+       <br>
+       <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('admin_settings') }}">Admin Settings</a><br>
+       <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('deposit_admin_approval') }}">Approve Deposits</a><br>
+       <a class="text-{{ context.theme }}-900 font-semibold hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('withdraw_admin_approval') }}">Approve Withdrawals</a><br>
+       <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('admin_stats_and_lock') }}">Check stats and lock investments</a><br>
+       
+       <br>
+       <p class="md:text-2xl sm:text-xl">Approved Withdraw</p> 
+        {% for unpaid_users in context.unpaid %}
+            <div class="bg-{{ context.theme }}-300 shadow-lg rounded-lg inset-lg py-2 px-3 my-2">
+                <p class="md:text-2xl sm:text-xl text-{{ context.theme }}-800">{{ unpaid_users.investment.user.username }} requested for {{ unpaid_users.withdraw_type }} funds - #{{ unpaid_users.amount }}</p>
+                <p class="md:text-2xl sm:text-xl text-{{ context.theme }}-800">{{ unpaid_users.investment.user.username }}'s details are {{ unpaid_users.investment.user.account_number }} {{ unpaid_users.investment.user.account_name }} {{ unpaid_users.investment.user.bank_name }}</p>
+                <p class="md:text-2xl sm:text-xl text-{{ context.theme }}-800">{{ unpaid_users.investment.user.username }}'s account number - {{ unpaid_users.investment.user.account_number }}</p>
+                <p class="md:text-2xl sm:text-xl text-{{ context.theme }}-800">{{ unpaid_users.investment.user.username }}'s account name {{ unpaid_users.investment.user.account_name }}</p>
+                <p class="md:text-2xl sm:text-xl text-{{ context.theme }}-800">{{ unpaid_users.investment.user.username }}'s bank name {{ unpaid_users.investment.user.bank_name }}</p>
+                
+                
+                
+                <form action="/withdraw-admin-approval" method="post">
+                    <input type="hidden" name="id" value="{{unpaid_users.investment.user_id}}" >
+                    <input type="hidden" name="invest_id" value="{{unpaid_users.investment.id}}" >
+                    <select class="md:w-1/3 sm:w-4/5 py-2 px-2 rounded-lg border-2 border-{{ context.theme }}-600 px-8 my-3 select_choice" name="choice" id="" required>
+                        <option value="">Select </option>
+                        <option value="True">Approve</option>
+                        <option value="False">Decline</option>
+                    </select>
+                    <input type="submit" value="Select" class="select-btn bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl">
+                </form>
+            </div>
+        {% else %}
+            <p class="text--700">No New deposit Claims, You need to press more on marketing</p>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p class="text-xl text-{{ context.theme }}-600 py-3 block">Ooops! You Got here by mistake</p>
+    {% endif %}
+{% endblock %}

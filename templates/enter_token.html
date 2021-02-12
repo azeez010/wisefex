@@ -1,0 +1,22 @@
+{% extends "./base.html"%}
+{% block title %}Enter Token{% endblock %}
+{% block content%}
+<style>
+    #token{
+    border-color: rgb(175, 175, 175)
+}
+
+#button{
+    background-color: {{context.theme}};
+}
+</style>
+<div class="bg-white h-full md:px-24 sm:px-4 pt-8 mheight">
+    <h1 class="text-4xl font-bold text-{{context.theme}}-700">Confirm E-mail</h1>
+    <br>
+    <form method="post">
+        <input class="border-2 placeholder-text-lg md:w-5/5 sm:3/5 px-4 mt-1 mb-2 md:py-4 sm:py-2 sm:px-2 sm:w-full md:w-lg" type="text" placeholder="Enter confirmation code" name="token" id="token"><br>
+        <button class="bg-{{context.theme }}-500 hover hover:bg-{{context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-2 md:mt-2 md:py-4 md:px-8 sm:py-2 sm:px-4 sm:text-md md:text-lg sm:w-full mt-2 md:w-lg" id="button">Confirm mail</button>
+    </form>
+</div>
+<!-- <br> -->
+{% endblock %}

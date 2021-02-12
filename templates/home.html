@@ -1,0 +1,134 @@
+{% extends "./base.html"%}
+{% block title %}Home{% endblock %}
+{% block content%}
+<style>
+        #email, textarea{
+    border-color: rgb(175, 175, 175)
+}
+/* 
+#button{
+    background-color: {{context.theme}};
+} */
+</style>
+<div style="background-image: url('static/money.jpg'); background-repeat: no-repeat;height: 65vh;  background-size: 100% 100%;"  class="grid sm:block sm:px-3 md:px-24">
+    <div class="sm:mt-18 md:mt-3">
+        <br>
+        <br>
+        <h1 class="text-white font-bold md:text-3xl sm:text-xl">WELCOME TO WISEFEX INVESTMENT</h1>
+        <p class="text-white py-3 md:text-xl sm:text-lg font-normal">
+WiseFex is an online investment platform not peer2peer
+
+LAUNCHING feb 2021
+
+WiseFex investment is a secured and reliable online investment, we thrive to reach out to people across the globe with the aim of freeing the world from financial crisis
+</p>
+       <br>
+       <a href="/dashboard" class="rounded-lg bg-{{context.theme}}-400 text-white md:text-xl md:py-4 md:px-8 sm:text-md sm:py-2 sm:px-4">Start Investing</a>
+       <br>
+       <br>
+</div>
+</div>
+<!-- <img src="/static/money.jpg" style=": 100%" alt="money"> -->
+
+
+
+<!-- 
+✅INVESTMENT DAY/ TIME
+Monday-Friday (9am-5pm)
+
+✅WITHDRAWAL DAY/TIME 
+Monday-Friday 
+
+✅Email verification when registration 
+✅Maximum of 2 running investment in one account 
+✅Bot notification on investment and withdrawal -->
+
+
+<!-- <a href="https://wisefex.s3.amazonaws.com/wisefex/qrcode_localhost.png?AWSAccessKeyId=AKIA5NZ7IZHAHGC5ELKR&Signature=d64rWUU6FRyKxcx1Hj8Zf6bqSIk%3D&Expires=1612699462" target="_blank                 "><img src="https://wisefex.s3.amazonaws.com/wisefex/qrcode_localhost.png?AWSAccessKeyId=AKIA5NZ7IZHAHGC5ELKR&Signature=d64rWUU6FRyKxcx1Hj8Zf6bqSIk%3D&Expires=1612699462" alt=""></a> -->
+<div class="ungrid sm:mt-4 sm:px-3 md:mt-6 md:px-24">
+    <div>
+        <h1 class="text-gray-700 text-4xl font-bold">FAQS</h1>
+<div class="py-4">
+    <!-- <div>
+        <img src="static/qa.png" class="qa"  alt="" srcset="">
+    </div> -->
+    <div id="howItWorks">
+        <h1 class="text-gray-700 sm:text-xl font-bold mb-2 md:text-xl">HOW IT WORKS HERE?</h1>
+        <p class="text-gray-600 sm:text-md md:text-xl" >
+            <ul>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> 35% in 10 Days (including weekend)
+                </li>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> Profit withdraw on 5th day
+                </li>
+                <li class="sm:text-md md:text-xl font-normal"> 
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> Capital withdraw on 10th day
+                </li>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> 2% Referral continuous bonus
+                </li>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> Min referral withdrawal in Naira - N2,000 
+                </li>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> Min referral withdrawal in BTC - $10 BTC
+                    
+                </li>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> N10,000 minimum and N500,000 maximum (for Naira)
+                </li>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> $50 minimum and $1000 maximum (for bitcoin)
+                </li>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> Naira Deposit confirmation is within 24hours 
+                    
+                </li>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> Btc  Deposit confirmation is automatic
+                </li>
+                <li class="sm:text-md md:text-xl font-normal">
+                    <i class="fa fa-check-circle text-{{context.theme}}-700"></i> Withdrawal window- within 24hours
+                    
+                </li>
+                
+            </ul>
+            
+        </p>
+    </div>
+</div>
+</div>
+
+    <div>
+        <img src="static/question.svg" alt="" srcset="">
+    </div>
+</div>
+<br>
+
+<div class="bg-white md:px-24 sm:px-4 pt-8 bg-gray-100">
+    <P class="text-center text-2xl font-bold text-{{context.theme}}-900">OUR GOAL</P>
+    <P class="text-center text-xl text-{{context.theme}}-900">Our primary goal is to help investors attain financial independence through our unbeaable profit generating investments</P>    
+    <br>
+    <br>
+</div>
+
+<div id="contactUs" class="bg-white h-full md:px-24 sm:px-4 pt-8 bg-gray-200">
+    <h1 class="text-4xl font-bold text-{{context.theme}}-700">Contact Us</h1>
+    <br>
+    <form method="post" action="/contact">
+        <input class="border-2 placeholder-text-lg md:w-5/5 sm:3/5 px-4 mt-1 mb-2 md:py-4 sm:py-2 sm:px-2 sm:w-full md:w-lg" type="text" placeholder="Email" name="email" id="email"><br>
+        <textarea name="message" placeholder="Ask for anything"  class="border-2 placeholder-text-lg md:w-5/5 sm:3/5 px-4 mt-1 mb-2 md:py-4 sm:py-2 sm:px-2 sm:w-full md:w-lg" id="" rows="10" style="width: 100%;"></textarea>
+        <button class="bg-{{context.theme }}-900 hover hover:bg-{{context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-2 md:mt-2 md:py-4 md:px-8 sm:py-2 sm:px-4 sm:text-md md:text-lg sm:w-full mt-2 md:w-lg" id="button">Contact us</button>
+    </form>
+    <br>
+    <div class="bg-gray-200 flex justify-around">
+        <!-- <div><i style="font-size: 50px" class="fa fa-facebook text-3xl text-blue-700"></i></div> -->
+        <div><a href="https://chat.whatsapp.com/GGoBJGxi9yBLEVTomoYtZw"><i style="font-size: 35px" class="fa fa-whatsapp text-3xl text-green-500"></i></a> </div>
+        <div><a href="https://t.me/joinchat/FcLa1FwqwqWdzWo5"><i style="font-size: 35px" class="fa fa-telegram text-3xl text-blue-300"></i></a></div> 
+        
+    </div>
+    <br>
+</div>
+<!-- <br> -->
+{% endblock %}
