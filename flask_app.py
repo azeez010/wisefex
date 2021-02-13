@@ -267,7 +267,7 @@ def confirm_payment():
                 flash("The transaction ID you input is invalid")
         # , currency=cur_type, amount=amount
         return redirect(url_for('pending_deposit')) 
-    # context = {}
+    # context = {} dataslid
     # all_tasks = Admin_tasks.query.all()
     # for task in all_tasks:
     #     context[f"{task.key}"] = task.value
@@ -403,13 +403,11 @@ def deposit_admin_approval():
             investment.date = time()
             db.session.commit()
 
-        # tele_text = f""
-        # group_chat_id = "-1001152297173"
-        # token = "1645602902:AAHPL-8aldFNxMrBCax7wIh_xTo-xX3_oJs"
-        # # token = os.getenv("tele_api")
-        # # https://api.telegram.org/bot<1645602902:AAHPL-8aldFNxMrBCax7wIh_xTo-xX3_oJs>/getUpdates
-        # requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
-        flash(f'You have successful confirmed that {investor.username} has paid wisefex')
+        group_chat_id = "-1001318559427"
+        token = os.getenv("tele_api")
+        tele_text = f'Hello {investor.username},\nYour N{investor.capital} DEPOSIT is confirmed.\n\nCONGRATULATIONS IN ADVANCE!\n\nTHANK YOU FOR INVESTING WITH US.'
+        requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
+       
         return redirect(url_for('deposit_admin_approval'))
     else:
         unapproved = Investments.query.filter_by(paid=True, approved=False, reject=False) 
@@ -487,6 +485,17 @@ def withdraw_admin_approval():
             withdraw.paid = True            
             db.session.commit()
             flash(f"You have successfully confirmed that {withdraw.investment.user.username}'s withdrawal")
+            if withdraw.withdraw_type == "naira":
+                group_chat_id = "-1001318559427"
+                token = os.getenv("tele_api")
+                text = f'CONGRATULATIONS {withdraw.investment.user.account_name}, Your (N{int(withdraw.amount):,}.00) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED {withdraw.investment.user.bank_name} ACCOUNT\n\nTHANK YOU FOR INVESTING WITH US.'
+                requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
+            else:
+                group_chat_id = "-1001318559427"
+                token = os.getenv("tele_api")
+                text = f'CONGRATULATIONS {withdraw.investment.user.account_name}, Your (${int(withdraw.amount):,}) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED BTC WALLET\n\nTHANK YOU FOR INVESTING WITH US.'
+                requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
+       
             return redirect(url_for('withdraw_admin_approval'))
         
         elif request.form.get('choice') == "False":

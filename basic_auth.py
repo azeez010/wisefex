@@ -214,14 +214,12 @@ def reset_password():
             db.session.add(resetPass)
             db.session.commit()
             try:
-                message = f"Hello Flask message sent from Flask-Mail, the token is {random_generated}, it expires in {expired_token / 60} hours"
-                # mail_folks(email, "Reset password from betbots", message)
-                msg = Message("Reset password from betbots", sender = 'wisefexinvestment11@gmail.com', recipients = [email])
-                msg.body = render_template('mail_template.txt', message=message)
-                # msg.html = render_template('mail_template.html', message=message)
+                message = f"Here is the password reset token {random_generated}, Use it to change your password"
+                msg = Message("Reset password from wisefex investment", sender = 'wisefexinvestment11@gmail.com', recipients = [email])
+                msg.body = message
                 mail.send(msg)
             except Exception as exc:
-                print(str(exc))
+                # print(str(exc))
                 return jsonify({"ok": '', "msg": 'Oops! mail failed to send sue to Network issues'})
 
             flash("The token has been sent to your mail successfully")
@@ -273,25 +271,3 @@ def confirm_reset_password():
 #         print("HAAAAA")
 #     return render_template("sign_up.html", form=form)
 
-   
-
-@app.route("/download", methods=["GET", "POST"])
-def download():
-    storage_key = os.environ.get("aws_key")
-    storage_secret = os.environ.get("aws_secret")
-    storage_bucket = "betbots"
-    user_id = current_user.id
-    getUser = User.query.get(user_id)
-    conn = boto3.client(
-            's3',
-        aws_access_key_id=storage_key,
-        aws_secret_access_key=storage_secret
-            )
-    
-    key = getUser.bet_49ja.bot_path
-    filename = key.split('/')[1]
-    bucket_name = 'betbots'
-    data = conn.get_object(Bucket='betbots', Key=key)
-    # application/zip
-    read_data = data['Body']
-    return send_file(read_data, mimetype='application/x-msdownload', attachment_filename=filename, as_attachment=True)
