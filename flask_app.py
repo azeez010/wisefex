@@ -645,7 +645,7 @@ def signup():
         expired_token = time() + (int(app.config['TOKEN_EXPIRY_TIME']) * 60 )
         print((int(app.config['TOKEN_EXPIRY_TIME']) * 60 ))
         
-        msg = Message('Confirmation code from wisefex', sender = 'dataslid@gmail.com', recipients = [email])
+        msg = Message('Confirmation code from wisefex', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
         msg.body = f"the confirmation code is {random_generated}"
         mail.send(msg)
         
@@ -744,7 +744,7 @@ def contact():
         email = request.form.get("email")
         message = request.form.get("message")
         
-        msg = Message('Mail from Wisefex User', sender = 'dataslid@gmail.com', recipients = [email])
+        msg = Message('Mail from Wisefex User', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
         msg.body = message
         mail.send(msg)
 
