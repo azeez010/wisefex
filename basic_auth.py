@@ -113,14 +113,15 @@ def enter_token():
                 bank_name = user_data.get("bank_name")
                 account_number = user_data.get("account_number")
                 country = user_data.get("country")
+                referral = user_data.get("referral")
     
                 password = md5_crypt.hash(password)
                 
                 check_for_first_user = len(User.query.all())
                 if not check_for_first_user:
-                    user = User(username=user_name, is_admin=True, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)
+                    user = User(username=user_name, referral=referral, is_admin=True, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)
                 else:
-                    user = User(username=user_name, is_admin=False, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)
+                    user = User(username=user_name, referral=referral, is_admin=False, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)
                 
                 db.session.add(user)
 

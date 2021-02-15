@@ -485,15 +485,22 @@ def withdraw_admin_approval():
             withdraw.paid = True            
             db.session.commit()
             flash(f"You have successfully confirmed that {withdraw.investment.user.username}'s withdrawal")
-            if withdraw.withdraw_type == "naira":
+            if withdraw.withdraw_type == "capital" or withdraw.withdraw_type == "profit":
                 group_chat_id = "-1001318559427"
                 token = os.getenv("tele_api")
-                text = f'CONGRATULATIONS {withdraw.investment.user.account_name}, Your (N{int(withdraw.amount):,}.00) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED {withdraw.investment.user.bank_name} ACCOUNT\n\nTHANK YOU FOR INVESTING WITH US.'
+                tele_text = f'CONGRATULATIONS {withdraw.investment.user.account_name}, Your (₦{int(withdraw.amount):,}.00) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED {withdraw.investment.user.bank_name} ACCOUNT\n\nTHANK YOU FOR INVESTING WITH US.'
                 requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
+            
+            elif withdraw.withdraw_type == "bonus":
+                group_chat_id = "-1001318559427"
+                token = os.getenv("tele_api")
+                tele_text = f'HELLO {withdraw.investment.user.account_name.upper()}, YOUR REFERRAL PAYMENT OF ₦{int(withdraw.amount):,} HAS BEEN PAID TO YOUR ACCOUNT.'
+                requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
+
             else:
                 group_chat_id = "-1001318559427"
                 token = os.getenv("tele_api")
-                text = f'CONGRATULATIONS {withdraw.investment.user.account_name}, Your (${int(withdraw.amount):,}) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED BTC WALLET\n\nTHANK YOU FOR INVESTING WITH US.'
+                tele_text = f'CONGRATULATIONS {withdraw.investment.user.account_name}, Your (${int(withdraw.amount):,}) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED BTC WALLET\n\nTHANK YOU FOR INVESTING WITH US.'
                 requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
        
             return redirect(url_for('withdraw_admin_approval'))
@@ -618,6 +625,7 @@ def signup():
     
     form = MyForm()
     if request.method == "POST" and form.validate_on_submit():
+        referral = request.form.get('ref')
         email = form.email.data
         password = form.password.data
         username = form.username.data
@@ -639,11 +647,12 @@ def signup():
             "mobile_number": mobile_number,
             "bitcoin_wallet": bitcoin_wallet,
             "country": country,
+            "referral": referral
         })
 
         random_generated = uuid.uuid4()
         expired_token = time() + (int(app.config['TOKEN_EXPIRY_TIME']) * 60 )
-        print((int(app.config['TOKEN_EXPIRY_TIME']) * 60 ))
+        # print((int(app.config['TOKEN_EXPIRY_TIME']) * 60 ))
         
         msg = Message('Confirmation code from wisefex', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
         msg.body = f"the confirmation code is {random_generated}"
@@ -712,11 +721,12 @@ def pending_deposit():
 def pending_withdraw():
     pending_withdrawal = Withdrawal.query.order_by(Withdrawal.time.desc()).all()
     your_withdraw = []
-    
+    print(len(pending_withdrawal))
     for your_pending_withdraw in pending_withdrawal:
         if your_pending_withdraw.investment.user.id == current_user.id:
             your_withdraw.append(your_pending_withdraw)
         print(your_pending_withdraw.investment.user.id)
+        print(current_user.id)
     
     context = {"pending": your_withdraw}
     all_tasks = Admin_tasks.query.all()

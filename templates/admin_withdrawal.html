@@ -2,7 +2,7 @@
 {% block title %}Admin tab{% endblock %}
 {% block content%}
 {% if current_user.is_admin %}
-    <div class="bg-white py-2 h-full sm:px-4 md:px-24 mheight">
+    <div class="bg-gray-100 py-2 h-full sm:px-4 md:px-24 mheight">
        <p class="text-3xl">Welcome, Admin {{ current_user.username }}</p> 
        <br>
        <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('admin_settings') }}">Admin Settings</a><br>
@@ -13,7 +13,7 @@
        <br>
        <p class="md:text-2xl sm:text-xl">Approved Withdraw</p> 
         {% for unpaid_users in context.unpaid %}
-            <div class="bg-{{ context.theme }}-300 shadow-lg rounded-lg inset-lg py-2 px-3 my-2">
+            <div class="bg-white shadow-lg rounded-lg inset-lg py-2 px-3 my-2">
                 <p class="md:text-2xl sm:text-xl text-{{ context.theme }}-800">{{ unpaid_users.investment.user.username }} requested for {{ unpaid_users.withdraw_type }} funds - #{{ unpaid_users.amount }}</p>
                 <p class="md:text-2xl sm:text-xl text-{{ context.theme }}-800">{{ unpaid_users.investment.user.username }}'s details are {{ unpaid_users.investment.user.account_number }} {{ unpaid_users.investment.user.account_name }} {{ unpaid_users.investment.user.bank_name }}</p>
                 <p class="md:text-2xl sm:text-xl text-{{ context.theme }}-800">{{ unpaid_users.investment.user.username }}'s account number - {{ unpaid_users.investment.user.account_number }}</p>
