@@ -394,6 +394,11 @@ def deposit_admin_approval():
                 print(prev_wallet_val, bonus, bonus + prev_wallet_val, ref_name)
 
             # print()
+            group_chat_id = "-1001318559427"
+            token = os.getenv("tele_api")
+            tele_text = f'Hello {investment.user.username},\nYour N{investment.capital} DEPOSIT is confirmed.\n\nCONGRATULATIONS IN ADVANCE!\n\nTHANK YOU FOR INVESTING WITH US.'
+            requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
+        
             db.session.commit()
              
         elif request.form.get('choice') == "False":
@@ -403,11 +408,6 @@ def deposit_admin_approval():
             investment.date = time()
             db.session.commit()
 
-        group_chat_id = "-1001318559427"
-        token = os.getenv("tele_api")
-        tele_text = f'Hello {investor.username},\nYour N{investor.capital} DEPOSIT is confirmed.\n\nCONGRATULATIONS IN ADVANCE!\n\nTHANK YOU FOR INVESTING WITH US.'
-        requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
-       
         return redirect(url_for('deposit_admin_approval'))
     else:
         unapproved = Investments.query.filter_by(paid=True, approved=False, reject=False) 
@@ -636,50 +636,55 @@ def signup():
         mobile_number = form.mobile_number.data
         country = request.form.get("country")
 
-        # password = md5_crypt.hash(password)
-        user_info = json.dumps({
-            "username": username,
-            "email": email,
-            "password": password,
-            "bank_name": bank_name,
-            "account_name": account_name,
-            "account_number": account_number,
-            "mobile_number": mobile_number,
-            "bitcoin_wallet": bitcoin_wallet,
-            "country": country,
-            "referral": referral
-        })
+        #confirmation email code 
 
-        random_generated = uuid.uuid4()
-        expired_token = time() + (int(app.config['TOKEN_EXPIRY_TIME']) * 60 )
-        # print((int(app.config['TOKEN_EXPIRY_TIME']) * 60 ))
+        # password = md5_crypt.hash(password)
+        # user_info = json.dumps({
+        #     "username": username,
+        #     "email": email,
+        #     "password": password,
+        #     "bank_name": bank_name,
+        #     "account_name": account_name,
+        #     "account_number": account_number,
+        #     "mobile_number": mobile_number,
+        #     "bitcoin_wallet": bitcoin_wallet,
+        #     "country": country,
+        #     "referral": referral
+        # })
+
+        # random_generated = uuid.uuid4()
+        # expired_token = time() + (int(app.config['TOKEN_EXPIRY_TIME']) * 60 )
+        # # print((int(app.config['TOKEN_EXPIRY_TIME']) * 60 ))
         
-        msg = Message('Confirmation code from wisefex', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
-        msg.body = f"the confirmation code is {random_generated}"
-        mail.send(msg)
+        # msg = Message('Confirmation code from wisefex', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
+        # msg.body = f"the confirmation code is {random_generated}"
+        # mail.send(msg)
         
-        confirm_user = Confirm_mail(user_details=user_info, token=random_generated, mail=email, dateTime=expired_token )
-        db.session.add(confirm_user)
-        db.session.commit()
+        # confirm_user = Confirm_mail(user_details=user_info, token=random_generated, mail=email, dateTime=expired_token )
+        # db.session.add(confirm_user)
+        # db.session.commit()
         
-        return redirect(url_for("enter_token"))
+        # return redirect(url_for("enter_token"))
+
+        # Sign up code
+
         # password = form.password.data
         # username = form.username.data
         # email = form.email.data
         # referral = request.form.get('ref')
-        # # phone = form.phone.data
-        # password = md5_crypt.hash(password)
-        # check_for_first_user = len(User.query.all())
-        # if not check_for_first_user:
-        #     user = User(username=username, is_admin=True, email=email, password=password, referral=referral)
-        # else:
-        #     user = User(username=username, is_admin=False, email=email, password=password, referral=referral)
+        # phone = form.phone.data
+        password = md5_crypt.hash(password)
+        check_for_first_user = len(User.query.all())
+        if not check_for_first_user:
+            user = User(username=username, referral=referral, is_admin=True, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)        
+        else:
+            user = User(username=username, referral=referral, is_admin=False, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)
         
-        # db.session.add(user)
-        # db.session.commit()
+        db.session.add(user)
+        db.session.commit()
         
-        # flash("You have signed up successfully")    
-        # return redirect('/login')
+        flash("You have signed up successfully")    
+        return redirect('/login')
     else:
         ref = request.args.get("ref")
         context = {"ref": ref}
