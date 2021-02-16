@@ -625,7 +625,7 @@ def signup():
     
     form = MyForm()
     if request.method == "POST" and form.validate_on_submit():
-        referral = request.form.get('ref')
+        # referral = request.form.get('ref')
         email = form.email.data
         password = form.password.data
         username = form.username.data
@@ -635,7 +635,7 @@ def signup():
         bitcoin_wallet = form.bitcoin_wallet.data
         mobile_number = form.mobile_number.data
         country = request.form.get("country")
-
+        referral = form.referral.data
         #confirmation email code 
 
         # password = md5_crypt.hash(password)
@@ -675,6 +675,7 @@ def signup():
         # phone = form.phone.data
         password = md5_crypt.hash(password)
         check_for_first_user = len(User.query.all())
+        # print(referral)
         if not check_for_first_user:
             user = User(username=username, referral=referral, is_admin=True, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)        
         else:

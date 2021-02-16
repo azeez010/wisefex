@@ -1,8 +1,12 @@
 from flask_wtf import FlaskForm
 from models import User
 from wtforms.validators import DataRequired, Length, ValidationError, EqualTo, Email
-from wtforms import StringField, IntegerField, PasswordField, SubmitField, TextAreaField
+from wtforms import StringField, HiddenField, IntegerField, PasswordField, SubmitField, TextAreaField
 import re
+# from flask import request, jsonify, send_from_directory, render_template, flash, redirect, url_for
+# import wtforms
+
+# print(dir(wtforms))
 
 class MyForm(FlaskForm):
     username = StringField('username', validators=[DataRequired()])
@@ -16,8 +20,10 @@ class MyForm(FlaskForm):
     password = PasswordField('password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm password', validators=[DataRequired()])
     submit = SubmitField("Sign up")
-    
+    referral = HiddenField()
+
     def validate_password(self, password):
+        print(self.referral.data)
         if len(password.data) < 7 or len(password.data) > 15:
             raise ValidationError("password must be greater 7 and less than 15")
     

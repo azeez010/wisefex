@@ -33,6 +33,8 @@
     {{ render_field(form.mobile_number, id="mobile_number", class="border-2 placeholder-text-lg md:w-5/5 sm:3/5 px-4 mt-1 mb-2 md:py-4 sm:py-2 sm:px-2 sm:w-full md:w-lg", placeholder="your mobile number") }}
     {{ render_field(form.password, id="password", class="border-2 placeholder-text-lg md:w-5/5 sm:3/5 px-4 mt-1 mb-2 md:py-4 sm:py-2 sm:px-2 sm:w-full md:w-lg", placeholder="your password") }}
     {{ render_field(form.confirm_password, id="confirm_password", class="border-2 placeholder-text-lg md:w-5/5 sm:3/5 px-4 mt-1 mb-2 md:py-4 sm:py-2 sm:px-2 sm:w-full md:w-lg", placeholder="confirm your password") }}
+    {{ render_field(form.referral, id="referral", class="border-2 placeholder-text-lg md:w-5/5 sm:3/5 px-4 mt-1 mb-2 md:py-4 sm:py-2 sm:px-2 sm:w-full md:w-lg", placeholder="your password") }}
+    
   </dl>
   <input type="hidden" name="ref" value="{{context.ref}}">
   <p class="md:text-2xl sm:text-lg font-bold">Select Country</p>
@@ -294,4 +296,12 @@
 </div>
 <br>
 <br>
+<script>
+  document.querySelector("label[for='referral'").style.display = "none"
+  let ref = "{{context.ref}}";
+  if(ref != "None"){
+    $("#referral").val(ref)
+  }
+
+</script>
 {% endblock %}
