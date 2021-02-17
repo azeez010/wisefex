@@ -62,21 +62,21 @@
                 <textarea name="description" id="" class="border-2 border-gray-400" placeholder="describe the payment"  style="width: 100%" cols="15"></textarea>
                 <br>
                 <input class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl w-full" type="submit" value="Submit Payment">
-                <!-- <input type="hidden" name="amount" value="{{user_data.capital}}"> -->
                 <input type="hidden" name="cur_type" value="{{user_data.invest_type}}">
                 <input type="hidden" name="investment_id" value="{{user_data.id}}">
             </form>
         </div>
         {% endif %}
     {% else %}
-        <!-- <p class="text-lg">You currently have ${{ current_user.invest_wallet }}</p><br> -->
         <div class="bg-white shadow-lg rounded-lg py-4 px-4">
-        You are to pay a sum of ${{user_data.amount}} to {{ user_data.bitcoin_addr}} Bitcoin Wallet
-        <p></p>
+        <p  class="text-center text-{{context.theme}}-900 font-semibold text-xl">You are to pay a sum of ${{user_data.capital}} to this {{ context.bitcoin_addr}} Bitcoin Wallet</p>   
+        <br>
+        <p class="text-center text-{{context.theme}}-900 text-xl">Enter your transaction hash here for automatic payment confirmation</p>
         <form action="{{url_for('confirm_payment')}}" method="post">
-            <input class="border-2 placeholder-text-md border-{{ context.theme }}-500 rounded-lg md:w-1/3 sm:w-4/5 mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" name="proof" id="">
-            <input class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl" type="submit" value="Submit Payment">
-            <!-- <input type="hidden" name="amount" value="{{amount}}"> -->
+            <input placeholder="Enter your transaction hash here" class="border-2 placeholder-text-md border-{{ context.theme }}-500 rounded-lg w-full mt-2 mb-2 md:py-2 sm:py-2 sm:px-2" type="text" name="proof" id="">
+            <input class="w-full bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl" type="submit" value="Submit Payment">
+            <input type="hidden" name="cur_type" value="{{user_data.invest_type}}">
+            <input type="hidden" name="investment_id" value="{{user_data.id}}">
             <input type="hidden" name="cur_type" value="{{user_data.id}}">
         </form> 
         </div>

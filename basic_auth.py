@@ -272,3 +272,42 @@ def confirm_reset_password():
 #         print("HAAAAA")
 #     return render_template("sign_up.html", form=form)
 
+
+
+        #confirmation email code 
+
+        # password = md5_crypt.hash(password)
+        # user_info = json.dumps({
+        #     "username": username,
+        #     "email": email,
+        #     "password": password,
+        #     "bank_name": bank_name,
+        #     "account_name": account_name,
+        #     "account_number": account_number,
+        #     "mobile_number": mobile_number,
+        #     "bitcoin_wallet": bitcoin_wallet,
+        #     "country": country,
+        #     "referral": referral
+        # })
+
+        # random_generated = uuid.uuid4()
+        # expired_token = time() + (int(app.config['TOKEN_EXPIRY_TIME']) * 60 )
+        # # print((int(app.config['TOKEN_EXPIRY_TIME']) * 60 ))
+        
+        # msg = Message('Confirmation code from wisefex', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
+        # msg.body = f"the confirmation code is {random_generated}"
+        # mail.send(msg)
+        
+        # confirm_user = Confirm_mail(user_details=user_info, token=random_generated, mail=email, dateTime=expired_token )
+        # db.session.add(confirm_user)
+        # db.session.commit()
+        
+        # return redirect(url_for("enter_token"))
+
+        # Sign up code
+
+        # password = form.password.data
+        # username = form.username.data
+        # email = form.email.data
+        # referral = request.form.get('ref')
+        # phone = form.phone.data

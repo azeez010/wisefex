@@ -23,7 +23,7 @@ class MyForm(FlaskForm):
     referral = HiddenField()
 
     def validate_password(self, password):
-        print(self.referral.data)
+        # print(self.referral.data)
         if len(password.data) < 7 or len(password.data) > 15:
             raise ValidationError("password must be greater 7 and less than 15")
     

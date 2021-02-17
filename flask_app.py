@@ -185,10 +185,7 @@ def dashboard():
 def confirm_payment():
     if request.method == "POST":
         db.session.commit()
-        # print(request.form, request.files)
-        # print(current_user.username)
         investment_id = request.form.get("investment_id")
-        print(investment_id)
         description = request.form.get("description")
         investment = Investments.query.filter_by(id=investment_id).first()
         amount = investment.capital
@@ -247,22 +244,22 @@ def confirm_payment():
             try:
                 verify_transaction = get_transaction_details(f'{proof}')
                 print(verify_transaction)
+                if verify_transaction.get("block_hash"):    
+                    cur_time = time()
+                    no_of_invest_day = int(context['no_of_invest_day'])
+                    no_of_invest_day *= 86400
+                    return_date = cur_time + no_of_invest_day
+                    investment.date = cur_time 
+                    investment.approved = True
+                    investment.return_date = return_date
+                    flash("Your Bitcoin Transaction hash has been accepted")
+                    db.session.add(investment)
+                    db.session.commit()
+                
             except Exception as exc:
+                flash("Your Bitcoin Transaction hash has been rejected")
                 print(exc)
 
-            if verify_transaction.get("block_hash"):    
-                # investment = Investments(paid=True, invest_type="bitcoin", user_id=current_user.id, capital=amount, expected_return=expected_return)
-                cur_time = time()
-                no_of_invest_day = int(context['no_of_invest_day'])
-                no_of_invest_day *= 86400
-                return_date = cur_time + no_of_invest_day
-                investment.date = cur_time 
-                investment.approved = True
-                investment.return_date = return_date
-            
-                db.session.add(investment)
-                db.session.commit()
-                flash("Your Paid Claim has successfully been submit, wait for admin's Claim")
             else:
                 flash("The transaction ID you input is invalid")
         # , currency=cur_type, amount=amount
@@ -322,11 +319,11 @@ def investment():
         expected_return = (int(context['invest_percent']) / 100 * int(amount)) + int(amount)
         investment = Investments(pending=True, reject=False, invest_type="bitcoin", user_id=current_user.id, capital=amount, expected_return=expected_return)
             
-        print(investment.id)
+        # print(investment.id)
         db.session.add(investment)
         db.session.commit()
         investment_id = investment.id
-        print(investment_id)
+        # print(investment_id)
         context["investment_id"] = investment_id 
 
 
@@ -369,7 +366,6 @@ def deposit_admin_approval():
         date = request.form.get('date')
         invest_id = request.form.get('id') 
         user_id = current_user.id
-        print(user_id)
         
         if request.form.get('choice') == "True":
             cur_time = time()
@@ -377,7 +373,6 @@ def deposit_admin_approval():
             no_of_invest_day *= 86400
             return_date = cur_time + no_of_invest_day
             investment = Investments.query.filter_by(id=invest_id).first()
-            # print(invest)
             investment.reject = False
             investment.approved = True            
             investment.date = cur_time
@@ -387,13 +382,11 @@ def deposit_admin_approval():
             investor = User.query.get(user_id)
             ref_name = investor.referral
             referral = User.query.filter_by(username=ref_name).first()
-            print(referral)
+            # print(referral)
             if referral:
                 prev_wallet_val = int(referral.bonus_wallet)
                 referral.bonus_wallet = prev_wallet_val + bonus
-                print(prev_wallet_val, bonus, bonus + prev_wallet_val, ref_name)
-
-            # print()
+         
             group_chat_id = "-1001318559427"
             token = os.getenv("tele_api")
             tele_text = f'Hello {investment.user.username},\nYour N{investment.capital} DEPOSIT is confirmed.\n\nCONGRATULATIONS IN ADVANCE!\n\nTHANK YOU FOR INVESTING WITH US.'
@@ -434,9 +427,9 @@ def withdraw_investment():
     invest = Investments.query.get(invest_id)
     if invest_type == "profit":
         funds = invest.expected_return - invest.capital  
-        withdraw = Withdrawal(investment_id=invest.id, amount=funds, withdraw_type=invest_type)
+        withdraw = Withdrawal(investment_id=invest.id, amount=funds, withdraw_type=invest_type, user_id=current_user.id)
         invest.profit_withdraw = True
-        print(invest.profit_withdraw)
+        # print(invest.profit_withdraw)
         db.session.add(withdraw)
         db.session.commit()
             
@@ -445,7 +438,7 @@ def withdraw_investment():
         
     elif invest_type == "capital":
         funds = invest.capital
-        withdraw = Withdrawal(investment_id=invest.id, amount=funds, withdraw_type=invest_type)
+        withdraw = Withdrawal(investment_id=invest.id, amount=funds, withdraw_type=invest_type, user_id=current_user.id)
         invest.capital_withdraw = True
         db.session.add(withdraw)
         db.session.commit()
@@ -456,7 +449,7 @@ def withdraw_investment():
         funds = current_user.bonus_wallet
         if int(funds) >= int(context["min_ref_withdraw"]):
             funds = current_user.bonus_wallet
-            withdraw = Withdrawal(investment_id=1, amount=funds, withdraw_type="bonus")
+            withdraw = Withdrawal(investment_id=1, amount=funds, withdraw_type="bonus", user_id=current_user.id)
             current_user.bonus_wallet = "0"
             db.session.add(withdraw)
             db.session.commit()
@@ -636,46 +629,9 @@ def signup():
         mobile_number = form.mobile_number.data
         country = request.form.get("country")
         referral = form.referral.data
-        #confirmation email code 
 
-        # password = md5_crypt.hash(password)
-        # user_info = json.dumps({
-        #     "username": username,
-        #     "email": email,
-        #     "password": password,
-        #     "bank_name": bank_name,
-        #     "account_name": account_name,
-        #     "account_number": account_number,
-        #     "mobile_number": mobile_number,
-        #     "bitcoin_wallet": bitcoin_wallet,
-        #     "country": country,
-        #     "referral": referral
-        # })
-
-        # random_generated = uuid.uuid4()
-        # expired_token = time() + (int(app.config['TOKEN_EXPIRY_TIME']) * 60 )
-        # # print((int(app.config['TOKEN_EXPIRY_TIME']) * 60 ))
-        
-        # msg = Message('Confirmation code from wisefex', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
-        # msg.body = f"the confirmation code is {random_generated}"
-        # mail.send(msg)
-        
-        # confirm_user = Confirm_mail(user_details=user_info, token=random_generated, mail=email, dateTime=expired_token )
-        # db.session.add(confirm_user)
-        # db.session.commit()
-        
-        # return redirect(url_for("enter_token"))
-
-        # Sign up code
-
-        # password = form.password.data
-        # username = form.username.data
-        # email = form.email.data
-        # referral = request.form.get('ref')
-        # phone = form.phone.data
         password = md5_crypt.hash(password)
         check_for_first_user = len(User.query.all())
-        # print(referral)
         if not check_for_first_user:
             user = User(username=username, referral=referral, is_admin=True, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)        
         else:
@@ -725,15 +681,7 @@ def pending_deposit():
 @app.route("/pending-withdraw", methods=["GET", "POST"])
 @login_required
 def pending_withdraw():
-    pending_withdrawal = Withdrawal.query.order_by(Withdrawal.time.desc()).all()
-    your_withdraw = []
-    print(len(pending_withdrawal))
-    for your_pending_withdraw in pending_withdrawal:
-        if your_pending_withdraw.investment.user.id == current_user.id:
-            your_withdraw.append(your_pending_withdraw)
-        print(your_pending_withdraw.investment.user.id)
-        print(current_user.id)
-    
+    your_withdraw = Withdrawal.query.filter_by(user_id=current_user.id).order_by(Withdrawal.time.desc()).all()
     context = {"pending": your_withdraw}
     all_tasks = Admin_tasks.query.all()
     for task in all_tasks:

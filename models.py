@@ -8,12 +8,14 @@ from time import time
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://olabode:azeez007@localhost/wisefex'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://dataslid:azeez007@dataslid.mysql.pythonanywhere-services.com/dataslid$betbot'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 app.config['SECRET_KEY'] = "d27e0926-13d9-11eb-900d-18f46ae7891sse"
 app.config['TOKEN_EXPIRY_TIME'] = "10"
 
+db_host = os.getenv("db_host")
+db_pass = os.getenv("db_pass")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://wisefex:{db_pass}@{db_host}/wisefex$wisefex'
 
 db = SQLAlchemy(app)
 
@@ -54,7 +56,7 @@ class Investments(db.Model):
     approved = db.Column(db.Boolean, default=False)
     pending = db.Column(db.Boolean, default=False)
     reject = db.Column(db.Boolean, default=False)
-    description = db.Column(db.String(6000))
+    description = db.Column(db.Text(10000))
     date = db.Column(db.Integer, default=time())
     invest_type = db.Column(db.String(200))
     datetime = db.Column(db.DateTime, default=datetime.now())
@@ -75,8 +77,8 @@ class Withdrawal(db.Model):
     withdraw_type = db.Column(db.String(100))
     amount = db.Column(db.String(80))
     time = db.Column(db.Integer, default=time())
-    # user  = db.relationship(User, backref=db.backref('Withdrawal', uselist=False), lazy=True)
-    # user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
+    user  = db.relationship(User, backref=db.backref('Withdrawal', uselist=False), lazy=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey(User.id))
 
 class Reset_password(db.Model):
     __tablename__ = 'reset_password'
