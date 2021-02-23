@@ -3,15 +3,15 @@
 {% block content%}
 {% if current_user.is_admin %}
     <div class="bg-white py-2 h-full sm:px-4 md:px-24 mheight">
-       <p class="text-3xl">Welcome, Admin {{ current_user.username }}</p> 
+       <p class="text-3xl">Welcome, Admin {{ current_user.username }}</p>
        <br>
        <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('admin_settings') }}">Admin Settings</a><br>
        <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('deposit_admin_approval') }}">Approve Deposits</a><br>
        <a class="text-{{ context.theme }}-700 hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('withdraw_admin_approval') }}">Approve Withdrawals</a><br>
        <a class="text-{{ context.theme }}-900 font-semibold hover:text-{{ context.theme }}-900 text-xl mx-2" href="{{ url_for('admin_stats_and_lock') }}">Check stats and lock investments</a><br>
        <br>
-       
-       <p class="text-2xl text-{{ context.theme }}-800 font-bold">Local Deposits</p> 
+
+       <p class="text-2xl text-{{ context.theme }}-800 font-bold">Lock Deposits and User updates</p>
        {% if context.lock_investment %}
         <form id="withdraw_capital" action="{{url_for('admin_stats_and_lock')}}" method="post">
             <input type="hidden" name="type" value="unlock">
@@ -24,7 +24,21 @@
         </form>
        {% endif %}
        <br>
-       <p class="text-2xl text-{{ context.theme }}-800 font-bold">Site Stats</p> 
+
+       {% if context.lock_user_update == "True" %}
+        <form action="{{url_for('user_updates')}}" method="post">
+            <input type="hidden" name="type" value="unlock">
+            <input type="submit" class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl" value="Unlock user updates">
+        </form>
+       {% else %}
+        <form action="{{url_for('user_updates')}}" method="post">
+            <input type="hidden" name="type" value="lock">
+            <input type="submit" class="bg-{{ context.theme }}-500 hover hover:bg-{{ context.theme }}-700 shadow-sm:hover text-white p-1 rounded-lg sm:mt-1 md:mt-2 md:py-2 md:px-8 sm:py-2 sm:px-4 sm:text-lg md:text-xl" value="Lock user updates">
+        </form>
+       {% endif %}
+       <br>
+
+       <p class="text-2xl text-{{ context.theme }}-800 font-bold">Site Stats</p>
        <p class="md:text-xl sm:text-lg text-{{ context.theme }}-800">No of all registered users - {{context.all_user}}</p>
        <p class="md:text-xl sm:text-lg text-{{ context.theme }}-800">No of deposit approved by admin - {{context.all_deposit }}</p>
        <p class="md:text-xl sm:text-lg text-{{ context.theme }}-800">No of withdraw approved by admin - {{context.all_withdrawal }}</p>
@@ -35,8 +49,8 @@
        <p class="md:text-xl sm:text-lg text-{{ context.theme }}-800">Total Money made by Wisefex - {{context.money_made}}</p>
        <p class="md:text-xl sm:text-lg text-{{ context.theme }}-800">Profit Made by Wisefex <b>#{{context.money_made-context.total_cash_paid}}</b></p>
 <br>
-<br>       
-        
+<br>
+
 
     </div>
     {% else %}

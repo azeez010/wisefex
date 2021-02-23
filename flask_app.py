@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory, render_template, flash, redirect, url_for
 from passlib.hash import md5_crypt
-from forms import MyForm, LoginForm, TestimonyForm 
+from forms import MyForm, LoginForm, TestimonyForm
 from models import User, Confirm_mail, Admin_tasks, Withdrawal, Investments, app, db, LoginManager, login_required, login_user, logout_user, current_user, current_user
 from is_safe_url import is_safe_url
 from schema import user_schema
@@ -31,7 +31,7 @@ def load_user(user_id):
 @app.route("/", methods=["GET"])
 def no_route():
     return redirect(url_for("home"))
-    
+
 @app.route("/home", methods=["GET"])
 def home():
     context = {}
@@ -54,7 +54,7 @@ def search():
 def admin():
     users = User.query.all()
     return render_template("admin.html", users=users)
-    
+
 @app.route("/user-settings", methods=["GET", "POST"])
 @login_required
 def user_settings():
@@ -71,9 +71,9 @@ def user_settings():
         user.bank_name = bank_name
         user.mobile_number = mobile_number
         user.bitcoin_addr = bitcoin_addr
-        
+
         db.session.commit()
-        
+
         flash("You have successfully updated your account details")
         return redirect(url_for('user_settings'))
     else:
@@ -98,7 +98,7 @@ def admin_settings():
             admin_task.value = value
 
         db.session.commit()
-        
+
         flash("You have successfully updated your Administrative Capabilities")
         return redirect(url_for('admin_settings'))
         # return redirect(url_for('user_settings'))
@@ -109,7 +109,7 @@ def admin_settings():
 
         username = request.args.get("username")
         user = User.query.filter_by(username=username)
-        
+
         context = {}
         all_tasks = Admin_tasks.query.all()
         for task in all_tasks:
@@ -124,11 +124,29 @@ def admin_settings():
         return render_template("admin_settings.html", context=context)
 
 def init_admin_abilities():
-    abilities = [["theme", "blue"], ["account_number", ""], ["account_name", ""], ["bank_name", ""], ["bitcoin_addr", ""], ["ref_bonus", "2"], ["invest_percent", "35"], ["min_naira", "10000"], ["max_naira", "500000"], ["min_bitcoin", "50"], ["max_bitcoin", "1000"], ["min_ref_withdraw", "2000"], ["no_concurrent_invest", "2"], ["lock_invest_time", ""], ["lock_invest_hours", "24"], ["no_of_invest_day", "10"], ["name_of_invest", ""], ["url_of_invest", "" ]]
+    abilities = [["theme", "blue"], ["account_number", ""], ["lock_user_update", "True"], ["account_name", ""], ["bank_name", ""], ["bitcoin_addr", ""], ["ref_bonus", "2"], ["invest_percent", "35"], ["min_naira", "10000"], ["max_naira", "500000"], ["min_bitcoin", "50"], ["max_bitcoin", "1000"], ["min_ref_withdraw", "2000"], ["no_concurrent_invest", "2"], ["lock_invest_time", ""], ["lock_invest_hours", "24"], ["no_of_invest_day", "10"], ["name_of_invest", ""], ["url_of_invest", "" ]]
     for ability in abilities:
         admin_task = Admin_tasks(key=f"{ability[0]}", value=f"{ability[1]}")
         db.session.add(admin_task)
     db.session.commit()
+
+
+@app.route("/user-updates", methods=["POST"])
+@login_required
+def user_updates():
+    if request.method == "POST":
+        admin_action = request.form.get("type")
+        lock_update = Admin_tasks.query.filter_by(key="lock_user_update").first()
+        if admin_action == "unlock":
+            lock_update.value = ""
+            flash("You have sucessfully unlocked the user's update account details ability")
+        else:
+            flash("You have sucessfully unlocked the user's update account details ability")
+            lock_update.value = "True"
+
+        db.session.commit()
+        return redirect(url_for('admin_stats_and_lock'))
+
 
 
 @app.route("/manage-user", methods=["GET", "POST"])
@@ -141,7 +159,7 @@ def manage_user():
         update_admin = request.form.get("admin")
         update_building = request.form.get("building")
         user.is_admin = bool(update_admin)
-            
+
         db.session.commit()
 
         flash(f"You have successfully update {user.username}'s ability")
@@ -156,9 +174,9 @@ def dashboard():
     # lock investment
     lock_investment = False
     lock_invest_time = Admin_tasks.query.filter_by(key="lock_invest_time").first()
-    
+
     context = {"your_investments": your_investments }
-    
+
     if lock_invest_time.value:
         if time() >= float(lock_invest_time.value):
             lock_investment = False
@@ -172,7 +190,7 @@ def dashboard():
     all_tasks = Admin_tasks.query.all()
     for task in all_tasks:
         context[f"{task.key}"] = task.value
-    
+
     context['min_ref_withdraw'] = int(context['min_ref_withdraw'])
     context['bonus_wallet'] = int(current_user.bonus_wallet)
 
@@ -194,20 +212,20 @@ def confirm_payment():
         all_tasks = Admin_tasks.query.all()
         for task in all_tasks:
             context[f"{task.key}"] = task.value
-        
+
         if cur_type == "naira":
             if int(context["min_naira"]) > int(amount):
                 flash(f"#{amount}, You are trying to invest is too low, the minimum is {context['min_naira']}")
-                return redirect(url_for('pending_deposit'))     
+                return redirect(url_for('pending_deposit'))
             elif int(context["max_naira"]) < int(amount):
                 flash(f"#{amount}, You are trying to invest is too high, the maximum is {context['max_naira']}")
-                return redirect(url_for('pending_deposit'))     
-            
+                return redirect(url_for('pending_deposit'))
+
             # expected_return = (int(context['invest_percent']) / 100 * int(amount)) + int(amount)
             # investment = Investments(paid=True, invest_type="naira", user_id=current_user.id, capital=amount, expected_return=expected_return)
-            
+
             # db.session.commit()
-            
+
             proof = request.files.get('proof')
             if proof:
                 filename = proof.filename
@@ -226,36 +244,36 @@ def confirm_payment():
                 investment.proof = conn.generate_presigned_url(ClientMethod="get_object", Params=params, ExpiresIn="80000")
                 investment.proof_key = key
                 conn.upload_fileobj(proof, storage_bucket, key)
-                
+
             investment.pending = False
             investment.paid = True
             investment.description = description
             db.session.commit()
-        
+
         elif cur_type == "bitcoin":
             if int(context["min_bitcoin"]) > int(amount):
                 flash(f"#{amount}, You are trying to invest is too low, the minimum is {context['min_bitcoin']}")
-                return redirect(url_for('pending_deposit'))     
+                return redirect(url_for('pending_deposit'))
             elif int(context["max_bitcoin"]) < int(amount):
                 flash(f"#{amount}, You are trying to invest is too high, the maximum is {context['max_bitcoin']}")
-                return redirect(url_for('pending_deposit'))     
-                    
+                return redirect(url_for('pending_deposit'))
+
             proof = request.form.get("proof")
             try:
                 verify_transaction = get_transaction_details(f'{proof}')
                 print(verify_transaction)
-                if verify_transaction.get("block_hash"):    
+                if verify_transaction.get("block_hash"):
                     cur_time = time()
                     no_of_invest_day = int(context['no_of_invest_day'])
                     no_of_invest_day *= 86400
                     return_date = cur_time + no_of_invest_day
-                    investment.date = cur_time 
+                    investment.date = cur_time
                     investment.approved = True
                     investment.return_date = return_date
                     flash("Your Bitcoin Transaction hash has been accepted")
                     db.session.add(investment)
                     db.session.commit()
-                
+
             except Exception as exc:
                 flash("Your Bitcoin Transaction hash has been rejected")
                 print(exc)
@@ -263,68 +281,68 @@ def confirm_payment():
             else:
                 flash("The transaction ID you input is invalid")
         # , currency=cur_type, amount=amount
-        return redirect(url_for('pending_deposit')) 
+        return redirect(url_for('pending_deposit'))
     # context = {} dataslid
     # all_tasks = Admin_tasks.query.all()
     # for task in all_tasks:
     #     context[f"{task.key}"] = task.value
-    
+
     # return render_template("dashboard.html", context=context)
 
 @app.route("/invest", methods=["GET", "POST"])
 @login_required
 def investment():
-    cur_type = request.args.get("currency") 
-    amount = request.args.get("amount") 
-    
+    cur_type = request.args.get("currency")
+    amount = request.args.get("amount")
+
     context = {"cur_type": cur_type, "amount": amount}
     all_tasks = Admin_tasks.query.all()
     for task in all_tasks:
         context[f"{task.key}"] = task.value
-    
-    invest_by_user = Investments.query.filter_by(user_id=current_user.id).all()
+
+    invest_by_user = Investments.query.filter_by(user_id=current_user.id, reject=False, paid=True, capital_withdraw=False, profit_withdraw=False).all()
     no_invest_by_user = len(invest_by_user)
 
     if no_invest_by_user >= int(context["no_concurrent_invest"]):
         flash(f"The maximum number of investment you can have at a time is {context['no_concurrent_invest']}")
         return redirect(url_for('dashboard'))
-    
+
     if cur_type == "naira":
         if int(context["min_naira"]) > int(amount):
             flash(f"#{amount}, You are trying to invest is too low, the minimum is {context['min_naira']}")
-            return redirect(url_for('dashboard'))     
+            return redirect(url_for('dashboard'))
         elif int(context["max_naira"]) < int(amount):
             flash(f"#{amount}, You are trying to invest is too high, the maximum is {context['max_naira']}")
-            return redirect(url_for('dashboard'))     
-        
+            return redirect(url_for('dashboard'))
+
         expected_return = (int(context['invest_percent']) / 100 * int(amount)) + int(amount)
         investment = Investments(pending=True, reject=False, invest_type="naira", user_id=current_user.id, capital=amount, expected_return=expected_return)
-            
+
         print(investment.id)
         db.session.add(investment)
         db.session.commit()
         investment_id = investment.id
         print(investment_id)
-        context["investment_id"] = investment_id 
+        context["investment_id"] = investment_id
 
-    
+
     elif cur_type == "bitcoin":
         if int(context["min_bitcoin"]) > int(amount):
             flash(f"#{amount}, You are trying to invest is too low, the minimum is {context['min_bitcoin']}")
-            return redirect(url_for('dashboard'))     
+            return redirect(url_for('dashboard'))
         elif int(context["max_bitcoin"]) < int(amount):
             flash(f"#{amount}, You are trying to invest is too high, the maximum is {context['max_bitcoin']}")
-            return redirect(url_for('dashboard'))     
-        
+            return redirect(url_for('dashboard'))
+
         expected_return = (int(context['invest_percent']) / 100 * int(amount)) + int(amount)
         investment = Investments(pending=True, reject=False, invest_type="bitcoin", user_id=current_user.id, capital=amount, expected_return=expected_return)
-            
+
         # print(investment.id)
         db.session.add(investment)
         db.session.commit()
         investment_id = investment.id
         # print(investment_id)
-        context["investment_id"] = investment_id 
+        context["investment_id"] = investment_id
 
 
 
@@ -334,7 +352,7 @@ def investment():
 @login_required
 def my_investment():
     # user_id = current_user.user_id
-    investment_id = request.args.get("id") 
+    investment_id = request.args.get("id")
     my_invest = Investments.query.get(investment_id)
     if my_invest.return_date:
         time_left = ceil((int(my_invest.return_date) - time()) / 86400)# - 9
@@ -347,7 +365,7 @@ def my_investment():
     all_tasks = Admin_tasks.query.all()
     for task in all_tasks:
         context[f"{task.key}"] = task.value
-    
+
     context["invest_day"] = int(context["no_of_invest_day"])
     context["capital"] = int(my_invest.capital)
     context["expected_return"] = int(my_invest.expected_return)
@@ -362,11 +380,11 @@ def deposit_admin_approval():
         all_tasks = Admin_tasks.query.all()
         for task in all_tasks:
             context[f"{task.key}"] = task.value
-        
+
         date = request.form.get('date')
-        invest_id = request.form.get('id') 
-        user_id = current_user.id
-        
+        invest_id = request.form.get('id')
+        # user_id = current_user.id
+
         if request.form.get('choice') == "True":
             cur_time = time()
             no_of_invest_day = int(context['no_of_invest_day'])
@@ -374,26 +392,26 @@ def deposit_admin_approval():
             return_date = cur_time + no_of_invest_day
             investment = Investments.query.filter_by(id=invest_id).first()
             investment.reject = False
-            investment.approved = True            
+            investment.approved = True
             investment.date = cur_time
             investment.return_date = return_date
             # Give bonus to owners
             bonus = investment.capital * (int(context["ref_bonus"]) / 100)
-            investor = User.query.get(user_id)
+            investor = User.query.get(investment.user.id)
             ref_name = investor.referral
             referral = User.query.filter_by(username=ref_name).first()
             # print(referral)
             if referral:
                 prev_wallet_val = int(referral.bonus_wallet)
                 referral.bonus_wallet = prev_wallet_val + bonus
-         
+
             group_chat_id = "-1001318559427"
             token = os.getenv("tele_api")
             tele_text = f'Hello {investment.user.username},\nYour N{investment.capital} DEPOSIT is confirmed.\n\nCONGRATULATIONS IN ADVANCE!\n\nTHANK YOU FOR INVESTING WITH US.'
             requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
-        
+
             db.session.commit()
-             
+
         elif request.form.get('choice') == "False":
             investment = Investments.query.filter_by(date=date, user_id=user_id).first()
             investment.reject = True
@@ -403,12 +421,12 @@ def deposit_admin_approval():
 
         return redirect(url_for('deposit_admin_approval'))
     else:
-        unapproved = Investments.query.filter_by(paid=True, approved=False, reject=False) 
+        unapproved = Investments.query.filter_by(paid=True, approved=False, reject=False)
         context = {"unapproved": unapproved}
         all_tasks = Admin_tasks.query.all()
         for task in all_tasks:
             context[f"{task.key}"] = task.value
-        
+
 
         return render_template("admin_unapproved.html", context=context)
 
@@ -418,24 +436,24 @@ def deposit_admin_approval():
 def withdraw_investment():
     invest_id = request.form.get("invest_id")
     invest_type = request.form.get("type")
-    
+
     context = {}
     all_tasks = Admin_tasks.query.all()
     for task in all_tasks:
         context[f"{task.key}"] = task.value
-        
+
     invest = Investments.query.get(invest_id)
     if invest_type == "profit":
-        funds = invest.expected_return - invest.capital  
+        funds = invest.expected_return - invest.capital
         withdraw = Withdrawal(investment_id=invest.id, amount=funds, withdraw_type=invest_type, user_id=current_user.id)
         invest.profit_withdraw = True
         # print(invest.profit_withdraw)
         db.session.add(withdraw)
         db.session.commit()
-            
+
         flash(f'You have successfully request to withdraw your profit which is #{funds}, You will be credited anytime soon')
         return redirect(url_for('my_investment', id=invest.id))
-        
+
     elif invest_type == "capital":
         funds = invest.capital
         withdraw = Withdrawal(investment_id=invest.id, amount=funds, withdraw_type=invest_type, user_id=current_user.id)
@@ -449,16 +467,16 @@ def withdraw_investment():
         funds = current_user.bonus_wallet
         if int(funds) >= int(context["min_ref_withdraw"]):
             funds = current_user.bonus_wallet
-            withdraw = Withdrawal(investment_id=1, amount=funds, withdraw_type="bonus", user_id=current_user.id)
+            withdraw = Withdrawal(amount=funds, withdraw_type="bonus", user_id=current_user.id)
             current_user.bonus_wallet = "0"
             db.session.add(withdraw)
             db.session.commit()
             flash(f'You have successfully request to withdraw your bonus which is #{funds}, You will be credited anytime soon')
-            return redirect(url_for('dashboard'))        
+            return redirect(url_for('dashboard'))
         else:
             flash(f"You don't have up to #{context['min_ref_withdraw']} Refer enough people to have above #{context['min_ref_withdraw']} in your bonus wallet")
-            return redirect(url_for('dashboard'))        
-    
+            return redirect(url_for('dashboard'))
+
 
 @app.route("/withdraw-admin-approval", methods=["GET", "POST"])
 @login_required
@@ -468,39 +486,42 @@ def withdraw_admin_approval():
         all_tasks = Admin_tasks.query.all()
         for task in all_tasks:
             context[f"{task.key}"] = task.value
-        
+
         date = request.form.get('date')
-        user_id = request.form.get('id') 
-        invest_id = request.form.get('invest_id') 
-        withdraw = Withdrawal.query.filter_by(investment_id = invest_id).first()
+        user_id = request.form.get('user_id')
+        time = request.form.get('time')
+        withdraw = Withdrawal.query.filter_by(time = time, user_id=user_id).first()
 
         if request.form.get('choice') == "True":
-            withdraw.paid = True            
+            withdraw.paid = True
             db.session.commit()
-            flash(f"You have successfully confirmed that {withdraw.investment.user.username}'s withdrawal")
+            flash(f"You have successfully confirmed that {withdraw.user.username}'s withdrawal")
             if withdraw.withdraw_type == "capital" or withdraw.withdraw_type == "profit":
                 group_chat_id = "-1001318559427"
                 token = os.getenv("tele_api")
-                tele_text = f'CONGRATULATIONS {withdraw.investment.user.account_name}, Your (₦{int(withdraw.amount):,}.00) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED {withdraw.investment.user.bank_name} ACCOUNT\n\nTHANK YOU FOR INVESTING WITH US.'
+                username =  withdraw.user.username.upper()
+                tele_text = f'CONGRATULATIONS {username}, Your (₦{int(withdraw.amount):,}.00) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED {withdraw.user.bank_name} ACCOUNT\n\nTHANK YOU FOR INVESTING WITH US.'
                 requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
-            
+
             elif withdraw.withdraw_type == "bonus":
                 group_chat_id = "-1001318559427"
                 token = os.getenv("tele_api")
-                tele_text = f'HELLO {withdraw.investment.user.account_name.upper()}, YOUR REFERRAL PAYMENT OF ₦{int(withdraw.amount):,} HAS BEEN PAID TO YOUR ACCOUNT.'
+                username =  withdraw.user.username.upper()
+                tele_text = f'HELLO {username}, YOUR REFERRAL PAYMENT OF ₦{int(withdraw.amount):,} HAS BEEN PAID TO YOUR ACCOUNT.'
                 requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
 
             else:
                 group_chat_id = "-1001318559427"
                 token = os.getenv("tele_api")
-                tele_text = f'CONGRATULATIONS {withdraw.investment.user.account_name}, Your (${int(withdraw.amount):,}) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED BTC WALLET\n\nTHANK YOU FOR INVESTING WITH US.'
+                username =  withdraw.user.username.upper()
+                tele_text = f'CONGRATULATIONS {username}, Your (${int(withdraw.amount):,}) WITHDRAWAL HAS BEEN PROCESSED AND SENT TO YOUR REGISTERED BTC WALLET\n\nTHANK YOU FOR INVESTING WITH US.'
                 requests.get(f"https://api.telegram.org/bot{token}/sendMessage?chat_id={group_chat_id}&text={tele_text}")
-       
+
             return redirect(url_for('withdraw_admin_approval'))
-        
+
         elif request.form.get('choice') == "False":
 
-            flash(f"You have successfully declined {withdraw.investment.user.username}'s withdrawal")
+            flash(f"You have successfully declined {withdraw.user.username}'s withdrawal")
             return redirect(url_for('withdraw_admin_approval'))
     else:
         unpaid_withdraw = Withdrawal.query.filter_by(paid=False).order_by(Withdrawal.time.desc())
@@ -508,7 +529,7 @@ def withdraw_admin_approval():
         all_tasks = Admin_tasks.query.all()
         for task in all_tasks:
             context[f"{task.key}"] = task.value
-        
+
 
         return render_template("admin_withdrawal.html", context=context)
 
@@ -529,7 +550,7 @@ def admin_stats_and_lock():
             lock_invest_time = Admin_tasks.query.filter_by(key="lock_invest_time").first()
             lock_invest_time.value = ""
             db.session.commit()
-            
+
             flash(f'You have successfully unlocked this platform for fresh investments')
             return redirect(url_for('admin_stats_and_lock'))
     else:
@@ -546,10 +567,10 @@ def admin_stats_and_lock():
         money_paid_profit = 0
         # Total deposits
         for each_invest in all_money_made:
-            money_made += int(each_invest.capital) 
+            money_made += int(each_invest.capital)
         # Total withdraw bonus
         for each_paid_bonus in all_money_paid_bonus:
-            money_paid_bonus += int(each_paid_bonus.amount) 
+            money_paid_bonus += int(each_paid_bonus.amount)
         # Total withdraw capital
         for each_paid_capital in all_money_paid_capital:
             money_paid_capital += int(each_paid_capital.amount)
@@ -561,13 +582,14 @@ def admin_stats_and_lock():
         lock_investment = False
         lock_invest_time = Admin_tasks.query.filter_by(key="lock_invest_time").first()
         theme = Admin_tasks.query.filter_by(key="theme").first().value
+        lock_user_update = Admin_tasks.query.filter_by(key="lock_user_update").first().value
         if lock_invest_time.value:
             if time() >= float(lock_invest_time.value):
                 lock_investment = False
             else:
                 lock_investment = True
 
-        
+
         total_cash_paid = money_paid_bonus + money_paid_capital + money_paid_profit
         context = {
             "total_cash_paid": total_cash_paid,
@@ -579,11 +601,12 @@ def admin_stats_and_lock():
             "all_deposit": all_deposit,
             "all_withdrawal": all_withdrawal,
             "lock_investment": lock_investment,
+            "lock_user_update": lock_user_update,
             "theme": theme
         }
-        
+
         return render_template("admin_lock_and_stats.html", context=context)
-   
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -600,7 +623,7 @@ def login():
             is_safe_url(next_page, request.url)
             if is_safe_url(next_page, request.url):
                 return redirect(next_page)
-            return redirect("/dashboard") 
+            return redirect("/dashboard")
         else:
             flash("e-mail or password is incorrect")
             return redirect("/login")
@@ -615,7 +638,7 @@ def login():
 def signup():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
-    
+
     form = MyForm()
     if request.method == "POST" and form.validate_on_submit():
         # referral = request.form.get('ref')
@@ -633,14 +656,14 @@ def signup():
         password = md5_crypt.hash(password)
         check_for_first_user = len(User.query.all())
         if not check_for_first_user:
-            user = User(username=username, referral=referral, is_admin=True, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)        
+            user = User(username=username, referral=referral, is_admin=True, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)
         else:
             user = User(username=username, referral=referral, is_admin=False, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)
-        
+
         db.session.add(user)
         db.session.commit()
-        
-        flash("You have signed up successfully")    
+
+        flash("You have signed up successfully")
         return redirect('/login')
     else:
         ref = request.args.get("ref")
@@ -675,7 +698,7 @@ def pending_deposit():
     all_tasks = Admin_tasks.query.all()
     for task in all_tasks:
         context[f"{task.key}"] = task.value
-    
+
     return render_template("pending_deposit.html", context=context)
 
 @app.route("/pending-withdraw", methods=["GET", "POST"])
@@ -686,7 +709,7 @@ def pending_withdraw():
     all_tasks = Admin_tasks.query.all()
     for task in all_tasks:
         context[f"{task.key}"] = task.value
-    
+
     return render_template("pending_withdrawals.html", context=context)
 
 @app.route("/your-referrals", methods=["GET", "POST"])
@@ -698,7 +721,7 @@ def your_referrals():
     all_tasks = Admin_tasks.query.all()
     for task in all_tasks:
         context[f"{task.key}"] = task.value
-    
+
     return render_template("referrals.html", context=context)
 
 
@@ -707,7 +730,7 @@ def contact():
     if request.method == "POST":
         email = request.form.get("email")
         message = request.form.get("message")
-        
+
         msg = Message('Mail from Wisefex User', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
         msg.body = message
         mail.send(msg)

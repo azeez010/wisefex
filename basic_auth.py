@@ -6,24 +6,24 @@ from flask import url_for, request, render_template, redirect, flash, send_from_
 import boto3, os, botocore
 from forms import passwordResetForm, passwordReset
 import io
-from forms import MyForm, LoginForm, TestimonyForm 
-from flask_admin import Admin
+from forms import MyForm, LoginForm, TestimonyForm
 from flask_admin.contrib.sqla import ModelView
+# from flask_admin import Admin
 
-admin = Admin(app)
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Admin_tasks, db.session))
-admin.add_view(ModelView(Investments, db.session))
-admin.add_view(ModelView(Withdrawal, db.session))
-admin.add_view(ModelView(Reset_password, db.session))
-admin.add_view(ModelView(Confirm_mail, db.session))
+# admin = Admin(app)
+# admin.add_view(ModelView(User, db.session))
+# admin.add_view(ModelView(Admin_tasks, db.session))
+# admin.add_view(ModelView(Investments, db.session))
+# admin.add_view(ModelView(Withdrawal, db.session))
+# admin.add_view(ModelView(Reset_password, db.session))
+# admin.add_view(ModelView(Confirm_mail, db.session))
 # Reset_password
 # @app.route("/signup", methds=[o"GET", "POST"])
 # def signup():
 # # def authenticate_mail():
 #     if current_user.is_authenticated:
 #         return redirect(url_for('dashboard'))
-    
+
 #     form = MyForm()
 #     if request.method == "POST" and form.validate_on_submit():
 #         name = form.name.data
@@ -43,11 +43,11 @@ admin.add_view(ModelView(Confirm_mail, db.session))
 #         # msg = Message('Hello', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
 #         # msg.body = f"Hello Flask message sent from Flask-Mail, the token is {random_generated}, it expires in {expired_token / 60} hours "
 #         # mail.send(msg)
-        
+
 #         confirm_user = Confirm_mail(user_details=user_info, token=random_generated, mail=email, dateTime=expired_token )
 #         db.session.add(confirm_user)
 #         db.session.commit()
-        
+
 #         return redirect(url_for("enter_token"))
 
 #     return render_template("sign_up.html", form=form)
@@ -66,7 +66,7 @@ admin.add_view(ModelView(Confirm_mail, db.session))
 #                 db.session.commit()
 #                 flash("token has expired, try again")
 #                 return redirect(url_for("confirm_mail"))
-                
+
 #             else:
 #                 # success msg
 #                 user_data = json.loads(verify_token.user_details)
@@ -74,9 +74,9 @@ admin.add_view(ModelView(Confirm_mail, db.session))
 #                 password = user_data.get("password")
 #                 email = user_data.get("email")
 #                 phone = user_data.get("phone")
-    
+
 #                 password = md5_crypt.hash(password)
-                
+
 #                 user = User(username=user_name, password=password, phone=phone, email=email)
 #                 db.session.add(user)
 
@@ -84,7 +84,7 @@ admin.add_view(ModelView(Confirm_mail, db.session))
 #                 for each_delete_confirm in delete_confirm:
 #                     db.session.delete(each_delete_confirm)
 #                 db.session.commit()
-                
+
 @app.route("/enter-token", methods=["GET", "POST"])
 # def confirm_mail():
 def enter_token():
@@ -100,7 +100,7 @@ def enter_token():
                 db.session.commit()
                 flash("token has expired, try again")
                 return redirect(url_for("sign_up"))
-                
+
             else:
                 # success msg
                 user_data = json.loads(verify_token.user_details)
@@ -114,22 +114,22 @@ def enter_token():
                 account_number = user_data.get("account_number")
                 country = user_data.get("country")
                 referral = user_data.get("referral")
-    
+
                 password = md5_crypt.hash(password)
-                
+
                 check_for_first_user = len(User.query.all())
                 if not check_for_first_user:
                     user = User(username=user_name, referral=referral, is_admin=True, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)
                 else:
                     user = User(username=user_name, referral=referral, is_admin=False, password=password, country=country, account_number=account_number, account_name=account_name, bitcoin_addr=bitcoin_wallet, bank_name=bank_name, mobile_number=mobile_number, email=email)
-                
+
                 db.session.add(user)
 
                 delete_confirm = Confirm_mail.query.filter_by(mail=email).all()
                 for each_delete_confirm in delete_confirm:
                     db.session.delete(each_delete_confirm)
                 db.session.commit()
-                
+
 
                 flash("your account has been verified successfully, you can now login")
                 return redirect(url_for("login"))
@@ -143,7 +143,7 @@ def enter_token():
         for task in all_tasks:
             context[f"{task.key}"] = task.value
         return render_template("enter_token.html", context=context)
-        
+
 
     #             flash("your account has been verified successfully, you can now login")
     #             return redirect(url_for("login"))
@@ -157,7 +157,7 @@ def enter_token():
     #     for task in all_tasks:
     #         context[f"{task.key}"] = task.value
     #     return render_template("enter_token.html", context=context)
-        
+
 @app.route('/enter-reset-password', methods=["GET", "POST"])
 def enter_reset_password():
     form = passwordReset()
@@ -183,7 +183,7 @@ def enter_reset_password():
                 for each_delete_confirm in delete_confirm:
                     db.session.delete(each_delete_confirm)
                 db.session.commit()
-                
+
                 flash("You have successfully changed your password")
                 return redirect(url_for("login"))
         else:
@@ -209,7 +209,7 @@ def reset_password():
         if user:
             random_generated = uuid.uuid4()
             Reset_password.query.filter_by(user_id=user.id).delete()
-            
+
             expired_token = time.time() + (int(app.config['TOKEN_EXPIRY_TIME']) * 60 )
             resetPass = Reset_password(token=random_generated, mail=email, dateTime=expired_token, user_id=user.id)
             db.session.add(resetPass)
@@ -251,7 +251,7 @@ def confirm_reset_password():
             return confirm_message
 
 # @app.route('/reset-password-confirm')
-# def confirm_reset_password():   
+# def confirm_reset_password():
 #     form = MyForm()
 #     if request.method == "POST" and form.validate_on_submit():
 #         password = form.password.data
@@ -266,7 +266,7 @@ def confirm_reset_password():
 #             user = User(username=name, is_admin=False, email=email, phone=phone, password=password)
 #         db.session.add(user)
 #         db.session.commit()
-#         flash("You have signed up successfully", "success")    
+#         flash("You have signed up successfully", "success")
 #         return redirect('/login')
 #     else:
 #         print("HAAAAA")
@@ -274,7 +274,7 @@ def confirm_reset_password():
 
 
 
-        #confirmation email code 
+        #confirmation email code
 
         # password = md5_crypt.hash(password)
         # user_info = json.dumps({
@@ -293,15 +293,15 @@ def confirm_reset_password():
         # random_generated = uuid.uuid4()
         # expired_token = time() + (int(app.config['TOKEN_EXPIRY_TIME']) * 60 )
         # # print((int(app.config['TOKEN_EXPIRY_TIME']) * 60 ))
-        
+
         # msg = Message('Confirmation code from wisefex', sender = 'wisefexinvestment11@gmail.com', recipients = [email])
         # msg.body = f"the confirmation code is {random_generated}"
         # mail.send(msg)
-        
+
         # confirm_user = Confirm_mail(user_details=user_info, token=random_generated, mail=email, dateTime=expired_token )
         # db.session.add(confirm_user)
         # db.session.commit()
-        
+
         # return redirect(url_for("enter_token"))
 
         # Sign up code

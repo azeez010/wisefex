@@ -5,17 +5,21 @@ from datetime import datetime
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from time import time
+import os
+
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "d27e0926-13d9-11eb-900d-18f46ae7891sse"
 app.config['TOKEN_EXPIRY_TIME'] = "10"
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 280
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
 
 db_host = os.getenv("db_host")
 db_pass = os.getenv("db_pass")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://wisefex:{db_pass}@{db_host}/wisefex$wisefex'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://wisefex:azeez007@wisefex.mysql.pythonanywhere-services.com/wisefex$wisefex'
 
 db = SQLAlchemy(app)
 
@@ -88,7 +92,7 @@ class Reset_password(db.Model):
     mail = db.Column(db.String(100))
     dateTime = db.Column(db.String(500), default=0)
     token = db.Column(db.String(150))
-    
+
 class Confirm_mail(db.Model):
     __tablename__ = 'confirm_mail'
     id = db.Column(db.Integer, primary_key=True)
